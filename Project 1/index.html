@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 1 - Lina Kaval</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>    
+
+    <div id="title">
+        <h1>Exploring the Solar System</h1>
+    </div>
+    <div class="flex-container" id="row1" width="1000" height="230">
+        <div class="flex-child" id="barchart1" style="flex: 1;">
+            <!-- <h1>Exoplanets Grouped By Number of Stars in its System</h1> -->
+            <h2>How many exoplanets have the same number of stars in its system? </h2>
+            <svg id="chart1"></svg>
+        </div> 
+        <div class="flex-child" id="barchart2" style="flex: 1;">
+            <!-- <h1>Exoplanets Grouped By Number of Planets in its System</h1> -->
+            <h2>How many exoplanets have the same number of planets in its system?</h2>
+            <svg id="chart2"></svg>
+        </div>
+        <div class="flex-child" id="barchart3" style="flex: 1;">
+            <h2>What Type of Star Do The Exoplanets Orbit?<br/></h2>
+            <svg id="chart3"></svg>
+        </div>
+        <div class="flex-child" id="barchart5" style="flex: 1;">
+            <h2>How many exoplanets are habitable?<br/><br/></h2>
+            <svg id="chart5"></svg>
+        </div>
+    </div>
+    <div class="flex-container" id="row1" width="1000" height="300">
+        <div class="flex-child" id="barchart4" style="flex: 1;">
+            <h2>How was the exoplanet discovered?</h2>
+            <svg id="chart4"></svg>
+        </div>
+        <div class="flex-child" id="barchart6" style="flex: 1;">
+            <h2>How far are the exoplanets from Earth?</h2>
+            <svg id="chart6"></svg>
+        </div>
+        
+    </div>
+    <div id="histogram1">
+        <h2>Discovery of exoplanets by year</h2>
+        <svg id="chart7"></svg>
+    </div>
+    <div id="scatterplot1">
+        <h2>Comparing exoplanet radius by mass</h2>
+        <svg id="chart8"></svg>
+    </div>
+    
+    
+
+    <div id="footer">
+        <h2>Lina Kaval
+            <br/>Source: <a href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=PS">Exoplanet Data Table</a>
+            / <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/planet_table_ratio.html">NASA Planet Ratio to Earth Table</a>
+            <br/>Libraries Used: D3.js, Node.js, d3-textwrap, templates from Justin Nordeman for histogram.js and scatterplot.js
+        </h2>
+    </div>
+    
+
+    
+    <div id="tooltip"></div>
+
+    <!-- D3 bundle -->
+    <script src="js/d3.v6.min.js"></script>
+
+    <script src="js/main.js"></script>
+    <script src="js/barchart.js"></script>
+    <script src="js/histogram.js"></script>
+    <script src="js/linechart.js"></script>
+    <script src="js/scatterplot.js"></script>
+</body>
+</html>

@@ -199,7 +199,7 @@ class Barchart {
         .on('mouseover', (event,d) => {
           d3.select('#tooltip')
             .style('opacity', 1)
-            .html(`<div class="tooltip-label">Number of stars</div>${d.count}`)
+            .html(`<div class="tooltip-label">Number of exoplanets</div>${d.count}`)
             //console.log(vis.yValue(d))
         })
         .on('mousemove', (event) => {

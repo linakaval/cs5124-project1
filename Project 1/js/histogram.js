@@ -126,7 +126,7 @@ class Histogram {
         .on('mouseover', (event,d) => {
             d3.select('#tooltip')
             .style('opacity', 1)
-            .html(`<div class="tooltip-label">Number of stars</div>${d.length}`)
+            .html(`<div class="tooltip-label">Number of exoplanets</div>${d.length}`)
             //console.log(vis.yValue(d))
         })
         .on('mousemove', (event) => {

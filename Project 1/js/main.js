@@ -221,7 +221,6 @@ d3.csv('data/exoplanets.csv')
         data8.push({"type": "milkyway", "radius": 4.01, "mass": 14.5, "object": "Uranus"}) //uranus
         data8.push({"type": "milkyway", "radius": 3.88, "mass": 17.1, "object": "Neptune"}) //neptune
         data8.push({"type": "milkyway", "radius": 0.187, "mass": 0.0022, "object": "Pluto"}) //pluto
-        console.log(data8)
         scatter = new Scatterplot({ 
             'parentElement': '#chart8',
             'containerWidth': 600,

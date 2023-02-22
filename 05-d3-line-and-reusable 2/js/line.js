@@ -34,8 +34,8 @@ class Line {
     vis.xAxis = d3.axisBottom(vis.xScale)
         .ticks(6)
         .tickSizeOuter(0)
-        .tickPadding(10);
-        //.tickFormat(d => d + ' km');
+        .tickPadding(10)
+        .tickFormat(d3.timeFormat("%Y"));
 
     vis.yAxis = d3.axisLeft(vis.yScale)
         .ticks(6)
@@ -71,6 +71,7 @@ class Line {
   let vis = this;
     
   vis.xValue = d => d.year;
+  console.log(vis.xValue)
   vis.yValue = d => d.cost;
 
   // Initialize area generator

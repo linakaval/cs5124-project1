@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>d3.js with leaflet.js</title>
+
+    <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
+    <script src="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7/leaflet.js">
+        
+    </script>
+        <script src="js/d3.v6.min.js"></script>
+
+
+
+</head>
+<body>
+
+    <div id="map" style="width: 1400px; height: 768px"></div>
+        <div id="tooltip"></div>
+
+
+    <script type="text/javascript">
+    
+        var map = L.map('map').setView([0,0],2);//[-41.2858, 174.7868], 2);
+        mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+            }).addTo(map);
+                
+    /* Initialize the SVG layer */
+    map._initPathRoot()    
+
+    /* We simply pick up the SVG from the map object */
+    var svg = d3.select("#map").select("svg"),
+    g = svg.append("g");
+
+    d3.csv('data/occurences.csv')
+      .then(data => {
+        console.log(data);
+      })
+  .catch(error => console.error(error));
+
+    // d3.csv("data/occurences.csv")
+    // .then(_data => {
+    //     data = _data;
+
+    //     data.forEach(function(d) {
+    //         d.LatLng = new L.LatLng(d.decimalLatitude,
+    //                                 d.decimalLongitude);
+    //     })
+        
+        // var feature = g.selectAll("circle")
+        //     .data( data )//collection.objects)
+        //     .enter().append("circle")
+        //     .style("stroke", "black")  
+        //     .style("opacity", .6) 
+        //     .style("fill", "red")
+        //     .attr("r", 5)
+        //     .on('mouseover', (event,d) => {
+        //   d3.select('#tooltip')
+        //     .style('display', 'block')
+        //     .html(`
+        //       <div class="tooltip-title">${event.LatLng}</div>
+        //     `);
+        // })
+        // .on('mouseleave', () => {
+        //   d3.select('#tooltip').style('display', 'none');
+        // });
+
+        // map.on("viewreset", update);
+        // update();
+
+        // function update() {
+        //     feature.attr("transform", 
+        //     function(d) { 
+        //         return "translate("+ 
+        //             map.latLngToLayerPoint(d.LatLng).x +","+ 
+        //             map.latLngToLayerPoint(d.LatLng).y +")";
+        //         }
+        //     )
+        // }
+
+    // }); 
+    
+    // d3.json("circles.json", function(collection) {
+
+    //     data = [];
+    //     for(var i = 0; i < 10000; i ++){
+    //         l1 = 90*Math.random() - 180*Math.random(); //-41.28+Math.random();
+    //         l2 = 90*Math.random() - 180*Math.random() ; //174.77+Math.random();
+    //         obj = new L.LatLng(l1 , l2 );
+    //         data.push( { LatLng: obj }  );
+    //     }
+
+
+    //     var feature = g.selectAll("circle")
+    //         .data( data )//collection.objects)
+    //         .enter().append("circle")
+    //         .style("stroke", "black")  
+    //         .style("opacity", .6) 
+    //         .style("fill", "red")
+    //         .attr("r", 5)
+    //         .on('mouseover', (event,d) => {
+    //       d3.select('#tooltip')
+    //         .style('display', 'block')
+    //         .html(`
+    //           <div class="tooltip-title">${event.LatLng}</div>
+    //         `);
+    //     })
+    //     .on('mouseleave', () => {
+    //       d3.select('#tooltip').style('display', 'none');
+    //     });
+
+    //     map.on("viewreset", update);
+    //     update();
+
+    //     function update() {
+    //         feature.attr("transform", 
+    //         function(d) { 
+    //             return "translate("+ 
+    //                 map.latLngToLayerPoint(d.LatLng).x +","+ 
+    //                 map.latLngToLayerPoint(d.LatLng).y +")";
+    //             }
+    //         )
+    //     }
+    // })           
+</script>
+</body>
+</html>

@@ -108,6 +108,7 @@ class Histogram {
       bars.style('opacity', 0.5)
       .transition().duration(1000)
           .style('opacity', 1)
+          .style('display', 'block')
           .attr('class', 'bar')
           .attr("x", 1)
           .attr("transform", function(d) {
@@ -126,6 +127,7 @@ class Histogram {
         .on('mouseover', (event,d) => {
             d3.select('#tooltip')
             .style('opacity', 1)
+            .style('display', 'block')
             .html(`<div class="tooltip-label">Number of exoplanets</div>${d.length}`)
             //console.log(vis.yValue(d))
         })

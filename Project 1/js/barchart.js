@@ -34,7 +34,7 @@ class Barchart {
     // Initialize scales and axes
     // Important: we flip array elements in the y output range to position the rectangles correctly
     vis.yScale = d3.scaleLinear()
-        .range([vis.height, 0]) 
+        .range([vis.height, 0]);
 
     vis.xScale = d3.scaleBand()
         .range([0, vis.width])
@@ -105,6 +105,7 @@ class Barchart {
     bars.style('opacity', 0.5)
       .transition().duration(1000)
         .style('opacity', 1)
+        .style('display', 'block')
         .attr('class', 'bar')
         .attr('x', d => vis.xScale(vis.xValue(d)))
         .attr('width', vis.xScale.bandwidth())
@@ -199,6 +200,7 @@ class Barchart {
         .on('mouseover', (event,d) => {
           d3.select('#tooltip')
             .style('opacity', 1)
+            .style('display', 'block')
             .html(`<div class="tooltip-label">Number of exoplanets</div>${d.count}`)
             //console.log(vis.yValue(d))
         })

@@ -88,4 +88,51 @@ svg .tick > text {
   font-size: 1.2em;
   /* inline-size: 2px;
   overflow-wrap: break-word; */
+ }
+
+/*table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+  margin-right: 20px;
+  max-height: 150px;
+  overflow: auto;
+}
+
+
+th {
+  background-color: #f38874;
+  color: white;
+  display:block;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+  font-family: 'Arial', sans-serif;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tbody{
+  display:block;
+  overflow:auto;
+  height:200px;
+  width:100%;
+}*/
+
+.tabulator{
+  font-family: 'Arial', sans-serif;
+}
+
+.tabulator-col{
+  padding: 10px;
+  text-align: center;
+}
+
+#tooltip, .tooltip{
+  font-family: 'Arial', sans-serif;
+  font-size: 0.8em;
 }

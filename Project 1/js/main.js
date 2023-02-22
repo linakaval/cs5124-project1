@@ -228,7 +228,23 @@ d3.csv('data/exoplanets.csv')
         }, data8);
         scatter.updateVis();
 
-        
+
+
+        //9 - Table (using Tabulator)
+        console.log("Populating table with values")
+        let data9 = [];
+        data.forEach(element =>{
+            data9.push({"exoplanet": element.pl_name, "sysname": element.sys_name, "year": element.disc_year,
+            "facility": element.disc_facility, "spectype": element.st_spectype, "distance": element.sy_dist}) 
+        })
+
+        table = new Table({
+
+        }, data9);
+        table.updateVis();
+
+       
+       
         
  })
  .catch(error => console.error(error));

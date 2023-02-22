@@ -10,7 +10,7 @@ class Scatterplot {
         parentElement: _config.parentElement,
         containerWidth: _config.containerWidth || 600,
         containerHeight: _config.containerHeight || 400,
-        margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 55},
+        margin: _config.margin || {top: 25, right: 10, bottom: 20, left: 55},
         tooltipPadding: _config.tooltipPadding || 15
       }
       this.data = _data;

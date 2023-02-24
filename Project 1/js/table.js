@@ -12,23 +12,27 @@ class Table {
             containerWidth: _config.containerWidth || 250,
             containerHeight: _config.containerHeight || 150,
             margin: _config.margin || {
-                top: 10,
+                top: 20,
                 right: 30,
                 bottom: 40,
-                left: 50
+                left: 100
             },
             reverseOrder: _config.reverseOrder || false,
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
         this.initVis();
+        
     }
     initVis(){
-        this.table = new Tabulator("#exoplanet_table", {
-            height:500,
-            width:600,
-            data: this.data, //assign data to table
-            layout:"fitColumns", //fit columns to width of table (optional)
+        let vis = this;
+        
+        vis.table = new Tabulator("#exoplanet_table", {
+            autoResize: false,
+            height: vis.config.containerHeight,
+            width: vis.config.containerWidth,
+            data: vis.data,
+            layout:"fitColumns",
             columns:[ //Define Table Columns
                 {title:"Exoplanet", field:"exoplanet"},
                 {title:"Discovery Year", field:"year"},

@@ -45,6 +45,12 @@ body {
   }
   .y-axis path {
     display: none;
+  } 
+
+  #scatter_yaxis path{
+    shape-rendering: crispEdges;
+    stroke: #888;
+    display: block;
   }
   .axis line {
     display: none;
@@ -136,3 +142,13 @@ tbody{
   font-family: 'Arial', sans-serif;
   font-size: 0.8em;
 }
+
+text{
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
+}
+
+/* svg .tick > text:hover {
+  font-weight: bold;
+  fill: red;
+} */

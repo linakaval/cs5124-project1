@@ -114,88 +114,15 @@ class Barchart {
 
     // Tooltip event listeners
     bars
-        .on('click', (event, d) => {
-          if (event.target.ownerSVGElement.id == "chart3"){
-            console.log("Chart3 new window opened")
-            console.log(d)
-            if (d.type == "A"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Stellar_classification#Class_A',
-                '_blank'
-              );
-            }
-            else if(d.type == "F"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Stellar_classification#Class_F',
-                '_blank'
-              );
-            }
-            else if(d.type == "G"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Stellar_classification#Class_G',
-                '_blank'
-              );
-            }
-            else if(d.type == "K"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Stellar_classification#Class_K',
-                '_blank'
-              );
-            }
-            else if(d.type == "M"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Stellar_classification#Class_M',
-                '_blank'
-              );
-            }
-
-          }
-          else if (event.target.ownerSVGElement.id == "chart4"){
-            console.log("Chart 4 new window opened ")
-            console.log(d)
-            if (d.discovery == "Transit"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_photometry',
-                '_blank'
-              );
-            }
-            else if(d.discovery == "Radial Velocity"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Radial_velocity',
-                '_blank'
-              );
-            }
-            else if(d.discovery == "Microlensing"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Gravitational_microlensing',
-                '_blank'
-              );
-            }
-            else if(d.discovery == "Imaging"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Direct_imaging',
-                '_blank'
-              );
-            }
-            else if(d.discovery == "Transit Timing Variations"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_timing',
-                '_blank'
-              );
-            }
-            else if(d.discovery == "Eclipse Timing Variations"){
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Eclipsing_binary_minima_timing',
-                '_blank'
-              );
-            }
-            else{
-              window.open(
-                'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets',
-                '_blank'
-              );
-            }
-          }
+        .on('click', (event, d) =>{
+          // console.log(event, d)
+          // const isActive = planetFilter.includes(d.planets);
+          // if (isActive) {
+          //   planetFilter = planetFilter.filter(f => f !== d.key); // Remove filter
+          // } else {
+          //   planetFilter.push(d.key); // Append filter
+          // }
+          // filterData();
         })
         .on('mouseover', (event,d) => {
           d3.select('#tooltip')
@@ -211,6 +138,38 @@ class Barchart {
         })
         .on('mouseleave', () => {
           d3.select('#tooltip').style('opacity', 0);
+        });
+
+    let tick = d3.selectAll('.tick')
+    tick
+        .on('mouseover', (event,d) => {
+          if (event.target.ownerSVGElement.id == "chart3" || event.target.ownerSVGElement.id == "chart4"){
+            d3.select('#tooltip')
+            .style('opacity', 1)
+            .style('display', 'block')
+            .text(`Click to see more info on ${d}`)
+          }       
+        })
+        .on('mousemove', (event) => {
+          d3.select('#tooltip')
+            .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+            .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+        })
+        .on('mouseleave', () => {
+          d3.select('#tooltip').style('opacity', 0);
+        })
+        .on('click', (event, d) => {
+          //alert("I've been clicked!" + d)
+          console.log(event.target.ownerSVGElement.id)
+          console.log(d)
+          if (event.target.ownerSVGElement.id == "chart3"){
+            console.log("Chart3 new window opened")
+            vis.chart3PopUp(d);
+          }
+          else if (event.target.ownerSVGElement.id == "chart4"){
+            console.log("Chart4 new window opened ")
+            vis.chart4Popup(d);
+          }
         });
        
     //update x axis
@@ -229,5 +188,84 @@ class Barchart {
     //update y axis
     vis.yAxisG.call(vis.yAxis);
   }
-}
+  
+  //function for creating a popup to tell user they can see more info from bar chart
+  chart3PopUp(d) {
+    if (d == "A"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Stellar_classification#Class_A',
+        '_blank'
+      );
+    }
+    else if(d == "F"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Stellar_classification#Class_F',
+        '_blank'
+      );
+    }
+    else if(d == "G"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Stellar_classification#Class_G',
+        '_blank'
+      );
+    }
+    else if(d == "K"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Stellar_classification#Class_K',
+        '_blank'
+      );
+    }
+    else if(d == "M"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Stellar_classification#Class_M',
+        '_blank'
+      );
+    }
+  
+  }
 
+  chart4Popup(d){
+    if (d == "Transit"){
+      window.open(
+        'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_photometry',
+        '_blank'
+      );
+      }
+      else if(d == "Radial Velocity"){
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Radial_velocity',
+          '_blank'
+        );
+      }
+      else if(d == "Microlensing"){
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Gravitational_microlensing',
+          '_blank'
+        );
+      }
+      else if(d == "Imaging"){
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Direct_imaging',
+          '_blank'
+        );
+      }
+      else if(d == "Transit Timing Variations"){
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_timing',
+          '_blank'
+        );
+      }
+      else if(d == "Eclipse Timing Variations"){
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Eclipsing_binary_minima_timing',
+          '_blank'
+        );
+      }
+      else{
+        window.open(
+          'https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets',
+          '_blank'
+        );
+      }
+  }
+}

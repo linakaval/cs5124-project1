@@ -1,3 +1,7 @@
+//global variables
+let planetFilter = [];
+let data, sy_snum, sy_pnum, st_spectype, discoverymethod, habitable, year_linechart, scatter, table;
+
 //Add data
 d3.csv('data/exoplanets.csv')
     .then(data => {
@@ -6,14 +10,17 @@ d3.csv('data/exoplanets.csv')
         //1 - sy_snum
         console.log("Loading first barchart")
         let data1 = [];
+        //console.log(data)
         data.forEach(element => {
             let a = element.sy_snum;
             let snum_index = data1.findIndex(item => item.sy_snum == a)
+            //console.log(element)  
             if(snum_index<0){
-                data1.push({"sy_snum": a, 'count': 1}) 
+                data1.push({"planets": [element.pl_name],"sy_snum": a, 'count': 1}) 
             }
             else{
-                data1[snum_index] = {"sy_snum": a, 'count': data1[snum_index].count + 1}
+                data1[snum_index].count = data1[snum_index].count + 1;
+                data1[snum_index].planets.push(element.pl_name);
             }
         })
         sy_snum = new Barchart({ 
@@ -32,13 +39,14 @@ d3.csv('data/exoplanets.csv')
             let b = element.sy_pnum;
             let pnum_index = data2.findIndex(item => item.sy_pnum == b)
             if(pnum_index<0){
-                data2.push({"sy_pnum": b, 'count': 1});
+                data2.push({"planets": [element.pl_name], "sy_pnum": b, 'count': 1});
             }
             else{
                 data2[pnum_index].count = data2[pnum_index].count + 1;
+                data2[pnum_index].planets.push(element.pl_name)
             }
         })
-        //console.log(data2)
+        console.log(data2)
         sy_pnum = new Barchart({ 
             'parentElement': '#chart2',
             // 'containerHeight': 400,
@@ -58,10 +66,11 @@ d3.csv('data/exoplanets.csv')
                 let star_index = star_types.indexOf(c);
                 if(star_index >=0){
                     if(!data3[star_index]){
-                        data3[star_index] = {"type": c, 'count': 1};
+                        data3[star_index] = {"planets": [element.pl_name], "type": c, 'count': 1};
                     }
                     else{
                         data3[star_index].count = data3[star_index].count + 1;
+                        data3[star_index].planets.push(element.pl_name);
                     }
                 }
             }         
@@ -87,18 +96,19 @@ d3.csv('data/exoplanets.csv')
                 }
                 else{
                     data4[discovery_index].count = data4[discovery_index].count + 1;
+                    data4[discovery_index].planets = element.pl_name;
                 }
             }     
         })
         data4.sort((a, b) => b.count - a.count)
         let other_discovery_count = data4.reduce(function (sum, item) {
-            return sum + ((data4.indexOf(item) >= 6) ? item.count : 0);
+            return sum + ((data4.indexOf(item) >= 5) ? item.count : 0);
         }, 0);
-        data4.length = 6
+        data4.length = 5
         data4.push({'discovery': 'Other', 'count': other_discovery_count});
         discoverymethod = new Barchart({ 
             'parentElement': '#chart4',
-            'containerWidth': 750,
+            'containerWidth': 650,
             'containerHeight': 200,
         }, data4, "discovery", "count");
         discoverymethod.updateVis();
@@ -107,49 +117,59 @@ d3.csv('data/exoplanets.csv')
 
         //5 - Habitable vs not
         console.log("Loading fifth barchart")
-        let data5 = [{'type': 'habitable', 'count': 0}, {'type': 'inhabitable', 'count': 0}];
+        let data5 = [{'planets': [], 'type': 'habitable', 'count': 0}, {'planets': [], 'type': 'inhabitable', 'count': 0}];
         data.forEach(element => {
             if (element.pl_orbsmax != "" && element.st_spectype != "")
             {
                 let e = [element.pl_orbsmax, element.st_spectype[0].toUpperCase()];
                 if (e[1] == "A"){
                     if(e[0] >= 8.5 && e[0] <= 12.5){
-                        data5[0].count = data5[0].count + 1
+                        data5[0].count = data5[0].count + 1;
+                        data5[0].planets.push(element.pl_name);
                     }
                     else{
-                        data5[1].count = data5[1].count + 1
+                        data5[1].count = data5[1].count + 1;
+                        data5[1].planets.push(element.pl_name);
                     }
                 }
                 else if (e[1] == "F"){
                     if(e[0] >= 1.5 && e[0] <= 2.2){
-                        data5[0].count = data5[0].count + 1
+                        data5[0].count = data5[0].count + 1;
+                        data5[0].planets.push(element.pl_name);
                     }
                     else{
-                        data5[1].count = data5[1].count + 1
+                        data5[1].count = data5[1].count + 1;
+                        data5[1].planets.push(element.pl_name);
                     }
                 }
                 else if (e[1] == "G"){
                     if(e[0] >= 0.95 && e[0] <= 1.4){
-                        data5[0].count = data5[0].count + 1
+                        data5[0].count = data5[0].count + 1;
+                        data5[0].planets.push(element.pl_name);
                     }
                     else{
-                        data5[1].count = data5[1].count + 1
+                        data5[1].count = data5[1].count + 1;
+                        data5[1].planets.push(element.pl_name);
                     }
                 }
                 else if (e[1] == "K"){
                     if(e[0] >= 0.38 && e[0] <= 0.56){
-                        data5[0].count = data5[0].count + 1
+                        data5[0].count = data5[0].count + 1;
+                        data5[0].planets.push(element.pl_name);
                     }
                     else{
-                        data5[1].count = data5[1].count + 1
+                        data5[1].count = data5[1].count + 1;
+                        data5[1].planets.push(element.pl_name);
                     }
                 }
                 else if (e[1] == "M"){
                     if(e[0] >= 0.08 && e[0] <= 0.12){
-                        data5[0].count = data5[0].count + 1
+                        data5[0].count = data5[0].count + 1;
+                        data5[0].planets.push(element.pl_name);
                     }
                     else{
-                        data5[1].count = data5[1].count + 1
+                        data5[1].count = data5[1].count + 1;
+                        data5[1].planets.push(element.pl_name);
                     }
                 }
             }
@@ -169,12 +189,13 @@ d3.csv('data/exoplanets.csv')
         data.forEach(element => {
             let f = element.sy_dist;
             if (f != ""){
-                data6.push({'distance': +f});
+                data6.push({'planets': [element.pl_name], 'distance': +f});
             } 
         })
+        console.log(data6)
         discoverymethod = new Histogram({ 
             'parentElement': '#chart6',
-            'containerWidth': 600,
+            'containerWidth': 650,
             'containerHeight': 200,
         }, data6);
         discoverymethod.updateVis();
@@ -186,16 +207,17 @@ d3.csv('data/exoplanets.csv')
             let g = element.disc_year;
             let year_index = data7.findIndex(item => item.year == g)
             if(year_index<0){
-                data7.push({"year": g, 'count': 1});
+                data7.push({"planets": [element.pl_name], "year": g, 'count': 1});
             }
             else{
                 data7[year_index].count = data7[year_index].count + 1;
+                data7[year_index].planets.push(element.pl_name);
             }
         })
         //console.log(data7)
         year_linechart = new LineChart({ 
             'parentElement': '#chart7',
-            'containerWidth': 600,
+            'containerWidth': 650,
             'containerHeight': 200,
         }, data7.sort((a, b) => a.year - b.year), "year", "count");
         year_linechart.updateVis();
@@ -208,9 +230,10 @@ d3.csv('data/exoplanets.csv')
             let rad = element.pl_rade;
             let mass = element.pl_bmasse;
             if (rad != "" && mass != ""){
-                data8.push({"type": "exoplanet", "radius": +rad, "mass": +mass, "object": element.pl_name});
+                data8.push({"planets": [element.pl_name], "type": "exoplanet", "radius": +rad, "mass": +mass, "object": element.pl_name});
             }
         })
+
         //Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/planet_table_ratio.html
         data8.push({"type": "milkyway", "radius": 0.383, "mass": 0.0553, "object": "Mercury"}) //mercury
         data8.push({"type": "milkyway", "radius": 0.949, "mass": 0.815, "object": "Venus"}) //venus
@@ -223,14 +246,14 @@ d3.csv('data/exoplanets.csv')
         data8.push({"type": "milkyway", "radius": 0.187, "mass": 0.0022, "object": "Pluto"}) //pluto
         scatter = new Scatterplot({ 
             'parentElement': '#chart8',
-            'containerWidth': 600,
+            'containerWidth': 650,
             'containerHeight': 200,
         }, data8);
         scatter.updateVis();
 
 
 
-        //9 - Table (using Tabulator)
+        //9 - Table (using Tabulator library)
         console.log("Populating table with values")
         let data9 = [];
         data.forEach(element =>{
@@ -239,12 +262,21 @@ d3.csv('data/exoplanets.csv')
         })
 
         table = new Table({
-
+            'containerWidth': 625,
+            'containerHeight': 410,
         }, data9);
         table.updateVis();
 
-       
-       
-        
  })
  .catch(error => console.error(error));
+
+
+//Make filter for linked data
+// function filterData() {
+//     if (planetFilter.length == 0) {
+//         sy_pnum.data = data;
+//     } else {
+//         sy_pnum.data = data.filter(d => planetFilter.includes(d.planets));
+//     }
+//     sy_pnum.updateVis();
+//   }

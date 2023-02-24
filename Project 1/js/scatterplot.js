@@ -10,7 +10,7 @@ class Scatterplot {
         parentElement: _config.parentElement,
         containerWidth: _config.containerWidth || 600,
         containerHeight: _config.containerHeight || 400,
-        margin: _config.margin || {top: 25, right: 10, bottom: 20, left: 55},
+        margin: _config.margin || {top: 25, right: 10, bottom: 20, left: 30},
         tooltipPadding: _config.tooltipPadding || 15
       }
       this.data = _data;
@@ -32,22 +32,27 @@ class Scatterplot {
           .range(['#f38874', '#89cff0']) // pink and green
           .domain(['exoplanet','milkyway']);
   
-      vis.xScale = d3.scaleLinear()
+      vis.xScale = d3.scaleLog()
           .range([0, vis.width]);
+
   
-      vis.yScale = d3.scaleLinear()
+      vis.yScale = d3.scaleLog()
           .range([vis.height, 0]);
   
       // Initialize axes
       vis.xAxis = d3.axisBottom(vis.xScale)
+          .tickFormat("")
           .ticks(6)
-          .tickSize(-vis.height - 10)
-          .tickPadding(10);
+          .tickSizeOuter(0);  
+          //.tickSize(-vis.height - 10)
+          //.tickPadding(10);
           //.tickFormat(d => d + ' km');
   
       vis.yAxis = d3.axisLeft(vis.yScale)
+          .tickFormat("")
           .ticks(6)
-          .tickSize(-vis.width - 10)
+          //.tickSize(-vis.width - 10)
+          .tickSizeOuter(0)
           .tickPadding(10);
   
       // Define size of SVG drawing area
@@ -67,23 +72,28 @@ class Scatterplot {
       
       // Append y-axis group
       vis.yAxisG = vis.chart.append('g')
-          .attr('class', 'axis y-axis');
+          .attr('class', 'axis y-axis')
+          .attr('id', 'scatter_yaxis');
+
   
       // Append both axis titles
       vis.chart.append('text')
           .attr('class', 'axis-title')
-          .attr('y', vis.height + 8)
-          .attr('x', vis.width + 10)
+          .attr('y', vis.height + 10)
+          .attr('x', vis.width/2)
           .attr('dy', '.71em')
           .style('text-anchor', 'end')
           .text('Radius');
   
       vis.svg.append('text')
           .attr('class', 'axis-title')
-          .attr('x', 0)
-          .attr('y', 0)
+          .attr('x', 0-vis.height/2)
+          .attr('y', 10)
           .attr('dy', '.71em')
+          .style('text-anchor', 'end')
+          .attr("transform", "rotate(-90)")
           .text('Mass');
+          
     }
   
     /**
@@ -92,14 +102,16 @@ class Scatterplot {
     updateVis() {
       let vis = this;
       
-      // Specificy accessor functions
+      // Specify accessor functions
       vis.colorValue = d => d.type;
       vis.xValue = d => d.radius;
       vis.yValue = d => d.mass;
   
       // Set the scale input domains
-      vis.xScale.domain([0, d3.max(vis.data, vis.xValue)]);
-      vis.yScale.domain([0, d3.max(vis.data, vis.yValue)]);
+      //vis.xScale.domain(d3.extent(vis.data, vis.xValue));
+      //vis.yScale.domain(d3.extent(vis.data, vis.yValue));
+      vis.xScale.domain([0.1, d3.max(vis.data, vis.xValue)]);
+      vis.yScale.domain([0.001, d3.max(vis.data, vis.yValue)]);
   
       vis.renderVis();
     }
@@ -147,10 +159,10 @@ class Scatterplot {
       // We use the second .call() to remove the axis and just show gridlines
       vis.xAxisG
           .call(vis.xAxis)
-          .call(g => g.select('.domain').remove());
+          // .call(g => g.select('.domain').remove());
   
       vis.yAxisG
           .call(vis.yAxis)
-          .call(g => g.select('.domain').remove())
+          // .call(g => g.select('.domain').remove())
     }
   }

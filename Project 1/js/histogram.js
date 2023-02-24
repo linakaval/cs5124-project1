@@ -115,7 +115,8 @@ class Histogram {
               return "translate(" + vis.xScale(d.x0) + "," + vis.yScale(d.length) + ")";
           })
           .attr("width", function(d) {
-              return vis.xScale(d.x1) - vis.xScale(d.x0);
+              //return vis.xScale(d.x1) - vis.xScale(d.x0)
+              return vis.xScale(d.x1) - vis.xScale(d.x0) <= 0 ? vis.xScale(d.x1) - vis.xScale(d.x0) : vis.xScale(d.x1) - vis.xScale(d.x0) -1;
           })
           .attr("height", function(d) {
               return vis.height - vis.yScale(d.length);

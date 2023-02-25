@@ -1,270 +1,143 @@
+//TODO: don't let y scale update after filter
+
 //global variables
 let planetFilter = [];
-let data, sy_snum, sy_pnum, st_spectype, discoverymethod, habitable, year_linechart, scatter, table;
+let data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table;
 
 //Add data
 d3.csv('data/exoplanets.csv')
-    .then(data => {
+    .then(_data => {
+        //TODO: filter data ahead of time here to remove all undefined values
+       _data = _data.filter(d => d.pl_rade != "")
+
+        //convert types where needed
+        _data.forEach(element => {
+            element.pl_rade = +element.pl_rade; //convert radius from string to num
+            element.pl_bmasse = +element.pl_bmasse; //convert mass from string to num
+            element.type = "exoplanet";
+        })        
+        data = _data;
+        console.log(data)
         console.log("Data loading complete.");
+
 
         //1 - sy_snum
         console.log("Loading first barchart")
-        let data1 = [];
-        //console.log(data)
-        data.forEach(element => {
-            let a = element.sy_snum;
-            let snum_index = data1.findIndex(item => item.sy_snum == a)
-            //console.log(element)  
-            if(snum_index<0){
-                data1.push({"planets": [element.pl_name],"sy_snum": a, 'count': 1}) 
-            }
-            else{
-                data1[snum_index].count = data1[snum_index].count + 1;
-                data1[snum_index].planets.push(element.pl_name);
-            }
-        })
         sy_snum = new Barchart({ 
-            'parentElement': '#chart1',
-            // 'containerWidth': 200,
-            // 'containerHeight': 100,      
-        }, data1.sort((a, b) => b.count - a.count), "sy_snum", "count");
+            'parentElement': '#chart1',   
+        }, data, "pl_name", "sy_snum");
         sy_snum.updateVis();
 
 
-        //TODO need to fix
         //2 - sy_num
         console.log("Loading second barchart")
-        let data2 = [];
-        data.forEach(element => {
-            let b = element.sy_pnum;
-            let pnum_index = data2.findIndex(item => item.sy_pnum == b)
-            if(pnum_index<0){
-                data2.push({"planets": [element.pl_name], "sy_pnum": b, 'count': 1});
-            }
-            else{
-                data2[pnum_index].count = data2[pnum_index].count + 1;
-                data2[pnum_index].planets.push(element.pl_name)
-            }
-        })
-        console.log(data2)
         sy_pnum = new Barchart({ 
             'parentElement': '#chart2',
-            // 'containerHeight': 400,
-            // 'containerWidth': 500
-        }, data2.sort((a, b) => b.count - a.count), "sy_pnum", "count");
+        }, data, "pl_name", "sy_pnum");
         sy_pnum.updateVis();
-
 
 
         //3 - st_spectype
         console.log("Loading third barchart")
-        let data3 = [];
+        data = data.filter(d => d.st_spectype != "");
+        star_types = ["A", "F", "G", "K", "M"];
+        data = data.filter(d => star_types.includes(d.st_spectype[0].toUpperCase().trim()));
         data.forEach(element => {
-            if (element.st_spectype != ""){
-                let c = element.st_spectype[0].toUpperCase().trim();
-                star_types = ["A", "F", "G", "K", "M"];
-                let star_index = star_types.indexOf(c);
-                if(star_index >=0){
-                    if(!data3[star_index]){
-                        data3[star_index] = {"planets": [element.pl_name], "type": c, 'count': 1};
-                    }
-                    else{
-                        data3[star_index].count = data3[star_index].count + 1;
-                        data3[star_index].planets.push(element.pl_name);
-                    }
-                }
-            }         
+            let c = element.st_spectype[0].toUpperCase().trim();
+            element.star_type = c; 
         })
-        //console.log(data3)
         st_spectype = new Barchart({ 
             'parentElement': '#chart3',
-            // 'containerHeight': 400,
-            // 'containerWidth': 500
-        }, data3.sort((a, b) => b.count - a.count), "type", "count");
+        }, data, "pl_name", "star_type");
         st_spectype.updateVis();
 
 
-        //4 - discovery methods
+        // //4 - discovery methods
         console.log("Loading fourth barchart")
-        let data4 = [];
-        data.forEach(element => {
-            let d = element.discoverymethod;
-            if (d != ""){
-                let discovery_index = data4.findIndex(item => item.discovery == d)
-                if(discovery_index < 0){
-                    data4.push({"discovery": d, 'count': 1}) 
-                }
-                else{
-                    data4[discovery_index].count = data4[discovery_index].count + 1;
-                    data4[discovery_index].planets = element.pl_name;
-                }
-            }     
-        })
-        data4.sort((a, b) => b.count - a.count)
-        let other_discovery_count = data4.reduce(function (sum, item) {
-            return sum + ((data4.indexOf(item) >= 5) ? item.count : 0);
-        }, 0);
-        data4.length = 5
-        data4.push({'discovery': 'Other', 'count': other_discovery_count});
-        discoverymethod = new Barchart({ 
+        discovery = new Barchart({ 
             'parentElement': '#chart4',
             'containerWidth': 650,
             'containerHeight': 200,
-        }, data4, "discovery", "count");
-        discoverymethod.updateVis();
+        }, data, "pl_name", "discoverymethod");
+        discovery.updateVis();
 
 
-
-        //5 - Habitable vs not
+        // //5 - Habitable vs not
         console.log("Loading fifth barchart")
-        let data5 = [{'planets': [], 'type': 'habitable', 'count': 0}, {'planets': [], 'type': 'inhabitable', 'count': 0}];
+        data = data.filter(d => d.pl_orbsmax != "");
         data.forEach(element => {
-            if (element.pl_orbsmax != "" && element.st_spectype != "")
-            {
-                let e = [element.pl_orbsmax, element.st_spectype[0].toUpperCase()];
-                if (e[1] == "A"){
-                    if(e[0] >= 8.5 && e[0] <= 12.5){
-                        data5[0].count = data5[0].count + 1;
-                        data5[0].planets.push(element.pl_name);
-                    }
-                    else{
-                        data5[1].count = data5[1].count + 1;
-                        data5[1].planets.push(element.pl_name);
-                    }
+            if (element.pl_orbsmax != "" && element.st_spectype != ""){
+                let e = [element.pl_orbsmax, element.star_type];
+                let insertValue = "";
+                switch(e[1]) {
+                    case "A":
+                        insertValue = (e[0] >= 8.5 && e[0] <= 12.5) ? "habitable" : "inhabitable";
+                      break;
+                    case "F":
+                        insertValue = (e[0] >= 1.5 && e[0] <= 2.2) ? "habitable" : "inhabitable";
+                      break;
+                    case "G":
+                        insertValue = (e[0] >= 0.95 && e[0] <= 1.4) ? "habitable" : "inhabitable";
+                      break;
+                    case "K":
+                        insertValue = (e[0] >= 0.38 && e[0] <= 0.56) ? "habitable" : "inhabitable";
+                      break;
+                    case "M":
+                        insertValue = (e[0] >= 0.08 && e[0] <= 0.12) ? "habitable" : "inhabitable";
+                      break;
                 }
-                else if (e[1] == "F"){
-                    if(e[0] >= 1.5 && e[0] <= 2.2){
-                        data5[0].count = data5[0].count + 1;
-                        data5[0].planets.push(element.pl_name);
-                    }
-                    else{
-                        data5[1].count = data5[1].count + 1;
-                        data5[1].planets.push(element.pl_name);
-                    }
-                }
-                else if (e[1] == "G"){
-                    if(e[0] >= 0.95 && e[0] <= 1.4){
-                        data5[0].count = data5[0].count + 1;
-                        data5[0].planets.push(element.pl_name);
-                    }
-                    else{
-                        data5[1].count = data5[1].count + 1;
-                        data5[1].planets.push(element.pl_name);
-                    }
-                }
-                else if (e[1] == "K"){
-                    if(e[0] >= 0.38 && e[0] <= 0.56){
-                        data5[0].count = data5[0].count + 1;
-                        data5[0].planets.push(element.pl_name);
-                    }
-                    else{
-                        data5[1].count = data5[1].count + 1;
-                        data5[1].planets.push(element.pl_name);
-                    }
-                }
-                else if (e[1] == "M"){
-                    if(e[0] >= 0.08 && e[0] <= 0.12){
-                        data5[0].count = data5[0].count + 1;
-                        data5[0].planets.push(element.pl_name);
-                    }
-                    else{
-                        data5[1].count = data5[1].count + 1;
-                        data5[1].planets.push(element.pl_name);
-                    }
-                }
+                element.habitable = insertValue;
             }
         })
-        //console.log(data5)
         habitable = new Barchart({ 
             'parentElement': '#chart5',
-            // 'containerHeight': 400,
-            // 'containerWidth': 500
-        }, data5, "type", "count");
+        }, data, "pl_name", "habitable");
         habitable.updateVis();
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         //6 - Distance from Earth
         console.log("Loading sixth histogram")
-        let data6 = [];
-        data.forEach(element => {
-            let f = element.sy_dist;
-            if (f != ""){
-                data6.push({'planets': [element.pl_name], 'distance': +f});
-            } 
-        })
-        console.log(data6)
-        discoverymethod = new Histogram({ 
+        distance_from_earth = new Histogram({ 
             'parentElement': '#chart6',
             'containerWidth': 650,
             'containerHeight': 200,
-        }, data6);
-        discoverymethod.updateVis();
+        }, data, "pl_name", "sy_dist");
+        distance_from_earth.updateVis();
         
         //7 - Discovery by year
         console.log("Loading seventh line chart")
-        let data7 = [];
-        data.forEach(element => {
-            let g = element.disc_year;
-            let year_index = data7.findIndex(item => item.year == g)
-            if(year_index<0){
-                data7.push({"planets": [element.pl_name], "year": g, 'count': 1});
-            }
-            else{
-                data7[year_index].count = data7[year_index].count + 1;
-                data7[year_index].planets.push(element.pl_name);
-            }
-        })
-        //console.log(data7)
         year_linechart = new LineChart({ 
             'parentElement': '#chart7',
             'containerWidth': 650,
             'containerHeight': 200,
-        }, data7.sort((a, b) => a.year - b.year), "year", "count");
+        }, data, "pl_name", "disc_year");
         year_linechart.updateVis();
 
 
         //8 - Exoplanet radius by Exoplanet mass
         console.log("Loading eighth scatter chart")
-        let data8 = [];
-        data.forEach(element => {
-            let rad = element.pl_rade;
-            let mass = element.pl_bmasse;
-            if (rad != "" && mass != ""){
-                data8.push({"planets": [element.pl_name], "type": "exoplanet", "radius": +rad, "mass": +mass, "object": element.pl_name});
-            }
-        })
-
-        //Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/planet_table_ratio.html
-        data8.push({"type": "milkyway", "radius": 0.383, "mass": 0.0553, "object": "Mercury"}) //mercury
-        data8.push({"type": "milkyway", "radius": 0.949, "mass": 0.815, "object": "Venus"}) //venus
-        data8.push({"type": "milkyway", "radius": 1, "mass": 1, "object": "Earth"}) //earth
-        data8.push({"type": "milkyway", "radius": 0.2724, "mass": 0.107, "object": "Mars"}) //mars
-        data8.push({"type": "milkyway", "radius": 11.21, "mass": 317.8, "object": "Jupiter"}) //jupiter
-        data8.push({"type": "milkyway", "radius": 9.45, "mass": 95.2, "object": "Saturn"}) //saturn    
-        data8.push({"type": "milkyway", "radius": 4.01, "mass": 14.5, "object": "Uranus"}) //uranus
-        data8.push({"type": "milkyway", "radius": 3.88, "mass": 17.1, "object": "Neptune"}) //neptune
-        data8.push({"type": "milkyway", "radius": 0.187, "mass": 0.0022, "object": "Pluto"}) //pluto
         scatter = new Scatterplot({ 
             'parentElement': '#chart8',
             'containerWidth': 650,
             'containerHeight': 200,
-        }, data8);
+        }, data, "pl_name", "pl_rade", "pl_bmasse");
         scatter.updateVis();
 
 
 
         //9 - Table (using Tabulator library)
         console.log("Populating table with values")
-        let data9 = [];
-        data.forEach(element =>{
-            data9.push({"exoplanet": element.pl_name, "sysname": element.sys_name, "year": element.disc_year,
-            "facility": element.disc_facility, "spectype": element.st_spectype, "distance": element.sy_dist}) 
-        })
+        // let data9 = [];
+        // data.forEach(element =>{
+        //     data9.push({"exoplanet": element.pl_name, "sysname": element.sys_name, "year": element.disc_year,
+        //     "facility": element.disc_facility, "spectype": element.st_spectype, "distance": element.sy_dist}) 
+        // })
 
         table = new Table({
             'containerWidth': 625,
             'containerHeight': 410,
-        }, data9);
+        }, data, "pl_name", );
         table.updateVis();
 
  })
@@ -272,11 +145,35 @@ d3.csv('data/exoplanets.csv')
 
 
 //Make filter for linked data
-// function filterData() {
-//     if (planetFilter.length == 0) {
-//         sy_pnum.data = data;
-//     } else {
-//         sy_pnum.data = data.filter(d => planetFilter.includes(d.planets));
-//     }
-//     sy_pnum.updateVis();
-//   }
+function filterData() {
+    console.log("FilterData was called")
+    //console.log(planetFilter)
+    if (planetFilter.length == 0) {
+        sy_snum.data = data;
+        st_spectype.data = data;
+        discovery.data = data;
+        habitable.data = data;
+        sy_pnum.data = data;
+        distance_from_earth.data = data;
+        year_linechart.data = data; //fix
+        scatter.data = data;
+    } 
+    else {
+        sy_snum.data = data.filter(d => planetFilter.includes(d.pl_name));
+        st_spectype.data = data.filter(d => planetFilter.includes(d.pl_name));
+        discovery.data = data.filter(d => planetFilter.includes(d.pl_name));
+        habitable.data = data.filter(d => planetFilter.includes(d.pl_name));
+        sy_pnum.data = data.filter(d => planetFilter.includes(d.pl_name));
+        distance_from_earth.data = data.filter(d => planetFilter.includes(d.pl_name));
+        year_linechart.data = data.filter(d => planetFilter.includes(d.pl_name))
+        scatter.data = data.filter(d => planetFilter.includes(d.pl_name));
+    }
+    sy_snum.updateVis();
+    sy_pnum.updateVis();
+    st_spectype.updateVis();
+    discovery.updateVis();
+    habitable.updateVis();
+    distance_from_earth.updateVis();
+    year_linechart.updateVis();
+    scatter.updateVis();
+}

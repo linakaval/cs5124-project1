@@ -34,10 +34,10 @@ class Table {
             data: vis.data,
             layout:"fitColumns",
             columns:[ //Define Table Columns
-                {title:"Exoplanet", field:"exoplanet"},
-                {title:"Discovery Year", field:"year"},
-                {title:"Discovery Facility", field:"facility"},
-                {title:"Spectral Type", field:"spectype"},
+                {title:"Exoplanet", field:"pl_name"},
+                {title:"Discovery Year", field:"disc_year"},
+                {title:"Discovery Facility", field:"disc_facility"},
+                {title:"Spectral Type", field:"st_spectype"},
             ],
             index: "exoplanet"
        });

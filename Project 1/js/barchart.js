@@ -5,7 +5,7 @@ class Barchart {
    * @param {Object}
    * @param {Array}
    */
-  constructor(_config, _data, _xdata, _ydata) {
+  constructor(_config, _data, _id, _dataCol) {
     // Configuration object with defaults
     this.config = {
       parentElement: _config.parentElement,
@@ -16,8 +16,8 @@ class Barchart {
       tooltipPadding: _config.tooltipPadding || 15
     }
     this.data = _data;
-    this.xdata = _xdata;
-    this.ydata = _ydata;
+    this.id = _id;
+    this.dataCol = _dataCol;
     this.initVis();
   }
   
@@ -74,20 +74,33 @@ class Barchart {
   updateVis() {
     let vis = this;
 
+    let aggregatedDataMap = d3.rollups(vis.data, v => v.length, d => d[vis.dataCol])
+    vis.aggregatedData = Array.from(aggregatedDataMap, ([key, count]) => ({ key, count }))
+    //console.log(vis.aggregatedData)
+
+    vis.aggregatedData = vis.aggregatedData.sort((a, b) => b.count - a.count);
+    
+    if (vis.dataCol == "discoverymethod"){
+      let other_discovery_count = vis.aggregatedData.reduce(function (sum, item) {
+        return sum + ((vis.aggregatedData.indexOf(item) >= 5) ? item.count : 0);
+      }, 0);
+      vis.aggregatedData = vis.aggregatedData.slice(0, 5);
+      vis.aggregatedData.push({key: "Other", count: other_discovery_count});
+    }
+    
     // Reverse column order depending on user selection
     // if (vis.config.reverseOrder) {
     //   vis.data.reverse();
     // }
-    //vis.data = vis.data.sort((a, b) => b[this.ydata] - a[this.ydata])
 
     // Specificy x- and y-accessor functions
-    vis.xValue = d => d[this.xdata];
-    vis.yValue = d => d[this.ydata];
+    
+    vis.xValue = d => d.key;
+    vis.yValue = d => d.count;
 
     // Set the scale input domains
-    vis.xScale.domain(vis.data.map(vis.xValue));
-    //console.log(d3.max(vis.data, vis.yValue))
-    vis.yScale.domain([0, d3.max(vis.data, vis.yValue)]);
+    vis.xScale.domain(vis.aggregatedData.map(vis.xValue));
+    vis.yScale.domain([0, d3.max(vis.aggregatedData, vis.yValue)]);
 
     vis.renderVis();
   }
@@ -99,7 +112,7 @@ class Barchart {
     let vis = this;
     // Add rectangles
     let bars = vis.chart.selectAll('.bar')
-        .data(vis.data, vis.xValuef)
+        .data(vis.aggregatedData, vis.xValue)
       .join('rect');
     
     bars.style('opacity', 0.5)
@@ -115,14 +128,25 @@ class Barchart {
     // Tooltip event listeners
     bars
         .on('click', (event, d) =>{
-          // console.log(event, d)
-          // const isActive = planetFilter.includes(d.planets);
-          // if (isActive) {
-          //   planetFilter = planetFilter.filter(f => f !== d.key); // Remove filter
-          // } else {
-          //   planetFilter.push(d.key); // Append filter
-          // }
-          // filterData();
+          console.log("bar clicked")
+          //console.log(event.srcElement)
+          //console.log(planetFilter)
+          const isActive = planetFilter.length > 0;
+          //console.log(isActive)
+          if (isActive) {
+            planetFilter = [];//planetFilter.filter(f => f !== d.pl_name); // Remove filter
+          } 
+          else {
+            data.forEach(function(element){
+              if (element[vis.dataCol] == d.key) planetFilter.push(element.pl_name);
+            })
+          }
+          console.log("values added to filter")
+          //console.log(planetFilter)
+          //console.log(d3.select(this))
+          //console.log(d3.select(event.srcElement))
+          d3.select(event.srcElement).classed('active', !isActive);
+          filterData(vis.dataCol);
         })
         .on('mouseover', (event,d) => {
           d3.select('#tooltip')
@@ -160,8 +184,8 @@ class Barchart {
         })
         .on('click', (event, d) => {
           //alert("I've been clicked!" + d)
-          console.log(event.target.ownerSVGElement.id)
-          console.log(d)
+          //console.log(event.target.ownerSVGElement.id)
+          //console.log(d)
           if (event.target.ownerSVGElement.id == "chart3"){
             console.log("Chart3 new window opened")
             vis.chart3PopUp(d);

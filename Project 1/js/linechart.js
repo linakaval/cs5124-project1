@@ -1,3 +1,6 @@
+// Initialize helper function
+const parseTime = d3.timeParse("%Y");
+
 class LineChart {
 
   /**
@@ -5,7 +8,7 @@ class LineChart {
    * @param {Object}
    * @param {Array}
    */
-  constructor(_config, _data) {
+  constructor(_config, _data, _id, _dataCol) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 800,
@@ -13,6 +16,8 @@ class LineChart {
       margin: _config.margin || {top: 30, right: 10, bottom: 30, left: 50}
     }
     this.data = _data;
+    this.id = _id;
+    this.dataCol = _dataCol;
     this.initVis();
   }
   
@@ -36,8 +41,8 @@ class LineChart {
     vis.xAxis = d3.axisBottom(vis.xScale)
         .ticks(6)
         .tickSizeOuter(0)
-        .tickPadding(10)
-        .tickFormat(d3.format("d"));
+        .tickPadding(10);
+        //.tickFormat(d3.format("Y"));
     vis.yAxis = d3.axisLeft(vis.yScale)
         .ticks(4)
         .tickSizeOuter(0)
@@ -87,8 +92,19 @@ class LineChart {
    */
   updateVis() {
     let vis = this;
-    
-    vis.xValue = d => d.year;
+
+    let aggregatedDataMap = d3.rollups(vis.data, v => v.length, d => d[vis.dataCol])
+    vis.aggregatedData = Array.from(aggregatedDataMap, ([key, count]) => ({ key, count }))
+    //console.log(vis.aggregatedData)
+    //d3.timeParse("%Y-%m-%d")(d.date), value : d.value
+
+    vis.aggregatedData = vis.aggregatedData.sort((a, b) => b.key - a.key);
+    vis.aggregatedData.forEach(d => {
+      d.key = parseTime(d.key);  // Convert string to float
+    });
+
+    //console.log(vis.aggregatedData)
+    vis.xValue = d => d.key;
     vis.yValue = d => d.count;
 
     vis.line = d3.line()
@@ -96,8 +112,9 @@ class LineChart {
         .y(d => vis.yScale(vis.yValue(d)));
 
     // Set the scale input domains
-    vis.xScale.domain(d3.extent(vis.data, vis.xValue));
-    vis.yScale.domain(d3.extent(vis.data, vis.yValue));
+    vis.xScale.domain(d3.extent(vis.aggregatedData, vis.xValue));
+    vis.yScale.domain(d3.extent(vis.aggregatedData, vis.yValue));
+    //xAxisScale.domain([new Date("01-01-2014"),new Date("01-01-2015")]);
 
     vis.bisectDate = d3.bisector(vis.xValue).left;
 
@@ -108,11 +125,13 @@ class LineChart {
    * Bind data to visual elements
    */
   renderVis() {
+
+    //TODO fix tooltip
     let vis = this;
 
     // Add line path
     vis.marks.selectAll('.chart-line')
-        .data([vis.data])
+        .data([vis.aggregatedData])
       .join('path')
         .style("fill", "none")
         .style("stroke", "#f38874")
@@ -134,17 +153,20 @@ class LineChart {
           const date = vis.xScale.invert(xPos);
 
           // Find nearest data point
-          const index = vis.bisectDate(vis.data, date, 1);
-          const a = vis.data[index - 1];
-          const b = vis.data[index];
-          const d = b && (date - a.year > b.year - date) ? b : a; 
+          const index = vis.bisectDate(vis.aggregatedData, date, 1);
+          //console.log(index)
+          const a = vis.aggregatedData[index - 1];
+          //console.log(a)
+          const b = vis.aggregatedData[index];
+          const d = b && (date - a.key > b.key - date) ? b : a; 
+          //console.log(index, d)
           // Update tooltip
           vis.tooltip.select('circle')
-              .attr('transform', `translate(${vis.xScale(d.year)},${vis.yScale(d.count)})`);
+              .attr('transform', `translate(${vis.xScale(d.key)},${vis.yScale(d.count)})`);
           
           vis.tooltip.select('text')
-              .attr('transform', `translate(${vis.xScale(d.year)},${(vis.yScale(d.count) - 15)})`)
-              .text(d.year + ": " + Math.round(d.count));
+              .attr('transform', `translate(${vis.xScale(d.key)},${(vis.yScale(d.count) - 15)})`)
+              .text(d.key + ": " + Math.round(d.count));
         });
     
     // Update the axes

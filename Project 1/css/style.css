@@ -152,3 +152,7 @@ text{
   font-weight: bold;
   fill: red;
 } */
+
+.bar.active {
+  stroke: #333;
+}

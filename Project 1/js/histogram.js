@@ -5,7 +5,7 @@ class Histogram {
    * @param {Object}
    * @param {Array}
    */
-  constructor(_config, _data) {
+  constructor(_config, _data, _id, _dataCol) {
       // Configuration object with defaults
       this.config = {
           parentElement: _config.parentElement,
@@ -21,6 +21,8 @@ class Histogram {
           tooltipPadding: _config.tooltipPadding || 15
       }
       this.data = _data;
+      this.id = _id;
+      this.dataCol = _dataCol;
       this.initVis();
   }
 
@@ -36,7 +38,6 @@ class Histogram {
 
       vis.yScale = d3.scaleLinear()
           .range([vis.height, 0])
-
 
       vis.xScale = d3.scaleLinear()
           .range([0, vis.width])
@@ -80,7 +81,7 @@ class Histogram {
       // set the parameters for the histogram
       vis.histogram = d3.histogram()
           .value(function(d) {
-              return d.distance;
+              return d[vis.dataCol];
           }) 
           .domain(vis.xScale.domain()) 
           .thresholds(vis.xScale.ticks(20));
@@ -125,6 +126,27 @@ class Histogram {
 
       // Tooltip event listeners
       bars
+        .on('click', (event, d) =>{
+            console.log("bar clicked")
+            const isActive = planetFilter.length > 0;
+            //console.log(isActive)
+            if (isActive) {
+                planetFilter = [];//planetFilter.filter(f => f !== d.pl_name); // Remove filter
+            } 
+            else {
+                let clickedData = Array.from(d, d => d.pl_name);
+                data.forEach(function(element){
+                    if (clickedData.includes(element.pl_name)) planetFilter.push(element.pl_name);
+                })
+            }
+            console.log("values added to filter")
+            //console.log(planetFilter)
+            //console.log(planetFilter)
+            //console.log(d3.select(this))
+            //console.log(d3.select(event.srcElement))
+            //d3.select(event.srcElement).classed('active', !isActive);
+            filterData(vis.dataCol);
+        })
         .on('mouseover', (event,d) => {
             d3.select('#tooltip')
             .style('opacity', 1)

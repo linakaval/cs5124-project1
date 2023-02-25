@@ -5,7 +5,7 @@ class Scatterplot {
      * @param {Object}
      * @param {Array}
      */
-    constructor(_config, _data) {
+    constructor(_config, _data, _xData, _yData) {
       this.config = {
         parentElement: _config.parentElement,
         containerWidth: _config.containerWidth || 600,
@@ -14,6 +14,8 @@ class Scatterplot {
         tooltipPadding: _config.tooltipPadding || 15
       }
       this.data = _data;
+      this.xData = _xData;
+      this.yData = _yData;
       this.initVis();
     }
     
@@ -100,16 +102,24 @@ class Scatterplot {
      * Prepare the data and scales before we render it.
      */
     updateVis() {
-      let vis = this;
-      
+      let vis = this;      
+      //Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/planet_table_ratio.html
+      vis.data.push({"type": "milkyway", "pl_rade": 0.383, "pl_bmasse": 0.0553, "pl_name": "Mercury"}) //mercury
+      vis.data.push({"type": "milkyway", "pl_rade": 0.949, "pl_bmasse": 0.815, "pl_name": "Venus"}) //venus
+      vis.data.push({"type": "milkyway", "pl_rade": 1, "pl_bmasse": 1, "pl_name": "Earth"}) //earth
+      vis.data.push({"type": "milkyway", "pl_rade": 0.2724, "pl_bmasse": 0.107, "pl_name": "Mars"}) //mars
+      vis.data.push({"type": "milkyway", "pl_rade": 11.21, "pl_bmasse": 317.8, "pl_name": "Jupiter"}) //jupiter
+      vis.data.push({"type": "milkyway", "pl_rade": 9.45, "pl_bmasse": 95.2, "pl_name": "Saturn"}) //saturn    
+      vis.data.push({"type": "milkyway", "pl_rade": 4.01, "pl_bmasse": 14.5, "pl_name": "Uranus"}) //uranus
+      vis.data.push({"type": "milkyway", "pl_rade": 3.88, "pl_bmasse": 17.1, "pl_name": "Neptune"}) //neptune
+      vis.data.push({"type": "milkyway", "pl_rade": 0.187, "pl_bmasse": 0.0022, "pl_name": "Pluto"}) //pluto
+
       // Specify accessor functions
       vis.colorValue = d => d.type;
-      vis.xValue = d => d.radius;
-      vis.yValue = d => d.mass;
+      vis.xValue = d => d.pl_rade;
+      vis.yValue = d => d.pl_bmasse;
   
       // Set the scale input domains
-      //vis.xScale.domain(d3.extent(vis.data, vis.xValue));
-      //vis.yScale.domain(d3.extent(vis.data, vis.yValue));
       vis.xScale.domain([0.1, d3.max(vis.data, vis.xValue)]);
       vis.yScale.domain([0.001, d3.max(vis.data, vis.yValue)]);
   
@@ -142,10 +152,10 @@ class Scatterplot {
               .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
               .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
               .html(`
-                <div class="tooltip-title">${d.object}</div>
+                <div class="tooltip-title">${d.pl_name}</div>
                 <ul>
-                  <li>Radius: ${d.radius} Earth Radius</li>
-                  <li>Mass: ${d.mass} Earth Mass</li>
+                  <li>Radius: ${d.pl_rade} Earth Radius</li>
+                  <li>Mass: ${d.pl_bmasse} Earth Mass</li>
                   <li>Type: ${d.type}</li>
                 </ul>
               `);

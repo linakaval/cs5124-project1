@@ -1,25 +1,24 @@
-//TODO: don't let y scale update after filter
+//TODO: don't let y scale update after filter (if I have time)
 
 //global variables
 let planetFilter = [];
-let data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table;
+let ogData, data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table;
 
 //Add data
 d3.csv('data/exoplanets.csv')
     .then(_data => {
-        //TODO: filter data ahead of time here to remove all undefined values
-       _data = _data.filter(d => d.pl_rade != "")
-
         //convert types where needed
         _data.forEach(element => {
             element.pl_rade = +element.pl_rade; //convert radius from string to num
             element.pl_bmasse = +element.pl_bmasse; //convert mass from string to num
             element.type = "exoplanet";
-        })        
+        })
+        
+        ogData = _data; //save unfiltered data as ogData
         data = _data;
-        console.log(data)
+        
+        includeMissingData(); //filter data
         console.log("Data loading complete.");
-
 
         //1 - sy_snum
         console.log("Loading first barchart")
@@ -39,13 +38,6 @@ d3.csv('data/exoplanets.csv')
 
         //3 - st_spectype
         console.log("Loading third barchart")
-        data = data.filter(d => d.st_spectype != "");
-        star_types = ["A", "F", "G", "K", "M"];
-        data = data.filter(d => star_types.includes(d.st_spectype[0].toUpperCase().trim()));
-        data.forEach(element => {
-            let c = element.st_spectype[0].toUpperCase().trim();
-            element.star_type = c; 
-        })
         st_spectype = new Barchart({ 
             'parentElement': '#chart3',
         }, data, "pl_name", "star_type");
@@ -93,8 +85,6 @@ d3.csv('data/exoplanets.csv')
             'parentElement': '#chart5',
         }, data, "pl_name", "habitable");
         habitable.updateVis();
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
         //6 - Distance from Earth
         console.log("Loading sixth histogram")
@@ -128,24 +118,17 @@ d3.csv('data/exoplanets.csv')
 
         //9 - Table (using Tabulator library)
         console.log("Populating table with values")
-        // let data9 = [];
-        // data.forEach(element =>{
-        //     data9.push({"exoplanet": element.pl_name, "sysname": element.sys_name, "year": element.disc_year,
-        //     "facility": element.disc_facility, "spectype": element.st_spectype, "distance": element.sy_dist}) 
-        // })
-
         table = new Table({
             'containerWidth': 625,
             'containerHeight': 410,
-        }, data, "pl_name", );
+        }, data, "pl_name");
         table.updateVis();
-
  })
  .catch(error => console.error(error));
 
 
 //Make filter for linked data
-function filterData() {
+function filterData(dataCol) {
     console.log("FilterData was called")
     //console.log(planetFilter)
     if (planetFilter.length == 0) {
@@ -157,6 +140,7 @@ function filterData() {
         distance_from_earth.data = data;
         year_linechart.data = data; //fix
         scatter.data = data;
+        table.data = data;
     } 
     else {
         sy_snum.data = data.filter(d => planetFilter.includes(d.pl_name));
@@ -167,13 +151,67 @@ function filterData() {
         distance_from_earth.data = data.filter(d => planetFilter.includes(d.pl_name));
         year_linechart.data = data.filter(d => planetFilter.includes(d.pl_name))
         scatter.data = data.filter(d => planetFilter.includes(d.pl_name));
+        table.data = data.filter(d => planetFilter.includes(d.pl_name));
     }
-    sy_snum.updateVis();
-    sy_pnum.updateVis();
-    st_spectype.updateVis();
-    discovery.updateVis();
-    habitable.updateVis();
-    distance_from_earth.updateVis();
+    console.log(dataCol)
+    if (dataCol != "sy_snum") sy_snum.updateVis();
+    if (dataCol != "sy_pnum") sy_pnum.updateVis();
+    if (dataCol != "star_type") st_spectype.updateVis();
+    if (dataCol != "discoverymethod") discovery.updateVis(); 
+    if (dataCol != "habitable") habitable.updateVis(); 
+    if (dataCol != "sy_dist") distance_from_earth.updateVis();
     year_linechart.updateVis();
     scatter.updateVis();
+    table.updateVis();
+}
+
+function includeMissingData(fromCheckbox) {
+    console.log("Missing data function called")
+    //Filtering data to remove all missing info on charts   
+    var checkbox = document.getElementById("includeMissing");
+
+    if (checkbox.checked != true){
+        console.log("checkbox not clicked")
+        data = data.filter(d => d.pl_rade != "") //remove missing radius
+        data = data.filter(d => d.pl_orbsmax != "") //remove missing planet orbitals
+        data = data.filter(d => d.pl_bmasse != "") //remove missing planet masses
+        data = data.filter(d => d.pl_orbeccen >= 0) //remove negative eccentricity bc it's not possible and could mean the whole row is compromised
+        data = data.filter(d => d.st_spectype != "")  //remove missing spectral types
+        data = data.filter(d => d.st_rad != "") //remove missing system radius
+        data = data.filter(d => d.st_mass != "") //remove missing system mass
+        data = data.filter(d => d.sy_dist != "") //remove missing system distance
+        star_types = ["A", "F", "G", "K", "M"];
+        data = data.filter(d => star_types.includes(d.st_spectype[0].toUpperCase().trim()));
+        data.forEach(element => {
+            let c = element.st_spectype[0].toUpperCase().trim();
+            element.star_type = c; 
+        })
+        
+    }
+    else{
+        console.log("Checkbox clicked")
+        data = ogData;
+
+    }
+    if(fromCheckbox){
+        sy_snum.data = data;
+        st_spectype.data = data;
+        discovery.data = data;
+        habitable.data = data;
+        sy_pnum.data = data;
+        distance_from_earth.data = data;
+        year_linechart.data = data;
+        scatter.data = data;
+        table.data = data;
+        sy_snum.updateVis();
+        sy_pnum.updateVis();
+        st_spectype.updateVis();
+        discovery.updateVis();
+        habitable.updateVis();
+        distance_from_earth.updateVis();
+        year_linechart.updateVis();
+        scatter.updateVis();
+        console.log("I may have two errors above. Ignore.") //TODO suppress errors
+        table.updateVis();
+    }  
 }

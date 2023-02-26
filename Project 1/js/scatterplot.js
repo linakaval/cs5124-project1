@@ -10,7 +10,7 @@ class Scatterplot {
         parentElement: _config.parentElement,
         containerWidth: _config.containerWidth || 600,
         containerHeight: _config.containerHeight || 400,
-        margin: _config.margin || {top: 25, right: 10, bottom: 20, left: 30},
+        margin: _config.margin || {top: 25, right: 50, bottom: 20, left: 30},
         tooltipPadding: _config.tooltipPadding || 15
       }
       this.data = _data;
@@ -31,7 +31,7 @@ class Scatterplot {
   
       // Initialize scales
       vis.colorScale = d3.scaleOrdinal()
-          .range(['#f38874', '#89cff0']) // pink and green
+          .range(['#4947D7', '#FFAE42']) // blue and orange/yellow
           .domain(['exoplanet','milkyway']);
   
       vis.xScale = d3.scaleLog()
@@ -43,7 +43,7 @@ class Scatterplot {
   
       // Initialize axes
       vis.xAxis = d3.axisBottom(vis.xScale)
-          .tickFormat("")
+          //.tickFormat("%Y")
           .ticks(6)
           .tickSizeOuter(0);  
           //.tickSize(-vis.height - 10)
@@ -51,7 +51,7 @@ class Scatterplot {
           //.tickFormat(d => d + ' km');
   
       vis.yAxis = d3.axisLeft(vis.yScale)
-          .tickFormat("")
+          //.tickFormat("")
           .ticks(6)
           //.tickSize(-vis.width - 10)
           .tickSizeOuter(0)
@@ -79,9 +79,9 @@ class Scatterplot {
 
   
       // Append both axis titles
-      vis.chart.append('text')
+      vis.svg.append('text')
           .attr('class', 'axis-title')
-          .attr('y', vis.height + 10)
+          .attr('y', vis.height + 30)
           .attr('x', vis.width/2)
           .attr('dy', '.71em')
           .style('text-anchor', 'end')
@@ -90,7 +90,7 @@ class Scatterplot {
       vis.svg.append('text')
           .attr('class', 'axis-title')
           .attr('x', 0-vis.height/2)
-          .attr('y', 10)
+          .attr('y', 15)
           .attr('dy', '.71em')
           .style('text-anchor', 'end')
           .attr("transform", "rotate(-90)")
@@ -102,17 +102,23 @@ class Scatterplot {
      * Prepare the data and scales before we render it.
      */
     updateVis() {
-      let vis = this;      
+      let vis = this;
+      vis.milkyway = [];
       //Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/planet_table_ratio.html
-      vis.data.push({"type": "milkyway", "pl_rade": 0.383, "pl_bmasse": 0.0553, "pl_name": "Mercury"}) //mercury
-      vis.data.push({"type": "milkyway", "pl_rade": 0.949, "pl_bmasse": 0.815, "pl_name": "Venus"}) //venus
-      vis.data.push({"type": "milkyway", "pl_rade": 1, "pl_bmasse": 1, "pl_name": "Earth"}) //earth
-      vis.data.push({"type": "milkyway", "pl_rade": 0.2724, "pl_bmasse": 0.107, "pl_name": "Mars"}) //mars
-      vis.data.push({"type": "milkyway", "pl_rade": 11.21, "pl_bmasse": 317.8, "pl_name": "Jupiter"}) //jupiter
-      vis.data.push({"type": "milkyway", "pl_rade": 9.45, "pl_bmasse": 95.2, "pl_name": "Saturn"}) //saturn    
-      vis.data.push({"type": "milkyway", "pl_rade": 4.01, "pl_bmasse": 14.5, "pl_name": "Uranus"}) //uranus
-      vis.data.push({"type": "milkyway", "pl_rade": 3.88, "pl_bmasse": 17.1, "pl_name": "Neptune"}) //neptune
-      vis.data.push({"type": "milkyway", "pl_rade": 0.187, "pl_bmasse": 0.0022, "pl_name": "Pluto"}) //pluto
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 0.383, "pl_bmasse": 0.0553, "pl_name": "Mercury"}) //mercury
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 0.949, "pl_bmasse": 0.815, "pl_name": "Venus"}) //venus
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 1, "pl_bmasse": 1, "pl_name": "Earth"}) //earth
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 0.2724, "pl_bmasse": 0.107, "pl_name": "Mars"}) //mars
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 11.21, "pl_bmasse": 317.8, "pl_name": "Jupiter"}) //jupiter
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 9.45, "pl_bmasse": 95.2, "pl_name": "Saturn"}) //saturn    
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 4.01, "pl_bmasse": 14.5, "pl_name": "Uranus"}) //uranus
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 3.88, "pl_bmasse": 17.1, "pl_name": "Neptune"}) //neptune
+      vis.milkyway.push({"type": "milkyway", "pl_rade": 0.187, "pl_bmasse": 0.0022, "pl_name": "Pluto"}) //pluto
+      
+      //add second object of milkway planets to main data object
+      vis.data = vis.data.concat(vis.milkyway);
+
+      //vis.data = vis.data.filter(d => d.pl_rade != "").filter(d => d.pl_bmasse != "");
 
       // Specify accessor functions
       vis.colorValue = d => d.type;
@@ -131,17 +137,29 @@ class Scatterplot {
      */
     renderVis() {
       let vis = this;
-  
+
       // Add circles
       const circles = vis.chart.selectAll('.point')
           .data(vis.data, d => d.trail)
         .join('circle')
           .attr('class', 'point')
           .attr('r', 4)
-          .attr('cy', d => vis.yScale(vis.yValue(d)))
-          .attr('cx', d => vis.xScale(vis.xValue(d)))
+          .attr('cy', d => (vis.yScale(vis.yValue(d)) === undefined ? 0.0000001 : vis.yScale(vis.yValue(d))))
+          .attr('cx', d => (vis.xScale(vis.xValue(d)) === undefined ? 0.0000001 : vis.xScale(vis.xValue(d))))
           //.attr('fill', '#f38874');
           .attr('fill', d => vis.colorScale(vis.colorValue(d)));
+          
+      vis.chart.selectAll('text').remove();
+      //Add label to all milkyway planets
+      vis.milkyway.forEach(d =>{
+        vis.chart.append('text')
+          .attr('class', 'label')
+          .attr('y', d.pl_name == "Earth"? vis.yScale(vis.yValue(d))-15 : vis.yScale(vis.yValue(d))+5 )//vis.height + 10)
+          .attr('x', d.pl_name == "Venus" || d.pl_name == "Neptune" ? vis.xScale(vis.xValue(d))-40 : vis.xScale(vis.xValue(d))+5 )//vis.width/2)
+          .attr('dy', '.71em')
+          .style('text-anchor', 'start')
+          .text(d.pl_name);
+      })
   
       // Tooltip event listeners
       circles

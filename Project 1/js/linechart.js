@@ -13,7 +13,7 @@ class LineChart {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 800,
       containerHeight: _config.containerHeight || 240,
-      margin: _config.margin || {top: 30, right: 10, bottom: 30, left: 50}
+      margin: _config.margin || {top: 30, right: 50, bottom: 30, left: 50}
     }
     this.data = _data;
     this.id = _id;
@@ -95,15 +95,14 @@ class LineChart {
 
     let aggregatedDataMap = d3.rollups(vis.data, v => v.length, d => d[vis.dataCol])
     vis.aggregatedData = Array.from(aggregatedDataMap, ([key, count]) => ({ key, count }))
-    //console.log(vis.aggregatedData)
+    // console.log(vis.aggregatedData)
     //d3.timeParse("%Y-%m-%d")(d.date), value : d.value
 
-    vis.aggregatedData = vis.aggregatedData.sort((a, b) => b.key - a.key);
+    vis.aggregatedData = vis.aggregatedData.sort((a, b) => a.key - b.key);
     vis.aggregatedData.forEach(d => {
       d.key = parseTime(d.key);  // Convert string to float
     });
 
-    //console.log(vis.aggregatedData)
     vis.xValue = d => d.key;
     vis.yValue = d => d.count;
 
@@ -114,7 +113,6 @@ class LineChart {
     // Set the scale input domains
     vis.xScale.domain(d3.extent(vis.aggregatedData, vis.xValue));
     vis.yScale.domain(d3.extent(vis.aggregatedData, vis.yValue));
-    //xAxisScale.domain([new Date("01-01-2014"),new Date("01-01-2015")]);
 
     vis.bisectDate = d3.bisector(vis.xValue).left;
 
@@ -125,16 +123,14 @@ class LineChart {
    * Bind data to visual elements
    */
   renderVis() {
-
-    //TODO fix tooltip
     let vis = this;
 
     // Add line path
-    vis.marks.selectAll('.chart-line')
+    vis.chart.selectAll('.chart-line')
         .data([vis.aggregatedData])
       .join('path')
         .style("fill", "none")
-        .style("stroke", "#f38874")
+        .style("stroke", "#4947D7")
         .attr("stroke-width", "0.2em")
         .attr('class', 'chart-line')
         .attr('d', vis.line);
@@ -166,7 +162,7 @@ class LineChart {
           
           vis.tooltip.select('text')
               .attr('transform', `translate(${vis.xScale(d.key)},${(vis.yScale(d.count) - 15)})`)
-              .text(d.key + ": " + Math.round(d.count));
+              .text(d.key.getFullYear() + ": " + Math.round(d.count));
         });
     
     // Update the axes

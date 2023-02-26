@@ -25,8 +25,16 @@ class Table {
         
     }
     initVis(){
-        let vis = this;
-        
+        let vis = this;   
+    }
+
+    updateVis(){
+        let vis = this;  
+        this.renderVis();
+    }
+
+    renderVis(){
+        let vis = this;  
         vis.table = new Tabulator("#exoplanet_table", {
             autoResize: false,
             height: vis.config.containerHeight,
@@ -41,16 +49,9 @@ class Table {
             ],
             index: "exoplanet"
        });
-    }
-
-    updateVis(){
-        this.renderVis();
-    }
-
-    renderVis(){
         //trigger a on alert message when the row is clicked
-        this.table.on("rowClick", function(e, row){ 
-            alert("Row " + row.getData().exoplanet + " Clicked!!!!");
+        vis.table.on("rowClick", function(e, row){ 
+            //alert("Row " + row.getData().exoplanet + " Clicked!!!!");
         })
     }
 }

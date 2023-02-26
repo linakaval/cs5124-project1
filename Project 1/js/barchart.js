@@ -78,7 +78,28 @@ class Barchart {
     vis.aggregatedData = Array.from(aggregatedDataMap, ([key, count]) => ({ key, count }))
     //console.log(vis.aggregatedData)
 
-    vis.aggregatedData = vis.aggregatedData.sort((a, b) => b.count - a.count);
+    if(vis.dataCol == "star_type" || vis.dataCol == "habitable"){
+      const found = vis.aggregatedData.find(element => element.key === undefined);
+      if(found){
+        found.key = "No data";
+      }
+    }
+    //console.log(vis.aggregatedData)
+    
+    
+    
+    // Reverse column order depending on user selection
+    // if (vis.config.reverseOrder) {
+    //   vis.data.reverse();
+    // }
+
+    // Specificy x- and y-accessor functions
+    if (vis.dataCol == "sy_snum" || vis.dataCol == "sy_pnum"){
+      vis.aggregatedData = vis.aggregatedData.sort((a, b) =>  a.key - b.key);
+    }
+    else{
+      vis.aggregatedData = vis.aggregatedData.sort((a, b) => b.count - a.count);
+    }
     
     if (vis.dataCol == "discoverymethod"){
       let other_discovery_count = vis.aggregatedData.reduce(function (sum, item) {
@@ -87,14 +108,6 @@ class Barchart {
       vis.aggregatedData = vis.aggregatedData.slice(0, 5);
       vis.aggregatedData.push({key: "Other", count: other_discovery_count});
     }
-    
-    // Reverse column order depending on user selection
-    // if (vis.config.reverseOrder) {
-    //   vis.data.reverse();
-    // }
-
-    // Specificy x- and y-accessor functions
-    
     vis.xValue = d => d.key;
     vis.yValue = d => d.count;
 
@@ -110,6 +123,7 @@ class Barchart {
    */
   renderVis() {
     let vis = this;
+    
     // Add rectangles
     let bars = vis.chart.selectAll('.bar')
         .data(vis.aggregatedData, vis.xValue)
@@ -129,6 +143,7 @@ class Barchart {
     bars
         .on('click', (event, d) =>{
           console.log("bar clicked")
+          //console.log(event, d)
           //console.log(event.srcElement)
           //console.log(planetFilter)
           const isActive = planetFilter.length > 0;

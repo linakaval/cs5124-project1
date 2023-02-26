@@ -24,16 +24,20 @@ body {
     font-size: 1em;
     margin-bottom: 0.2em;
   }
+  label{
+    font-family: 'Arial', sans-serif;
+  }
   .bar {
-    fill: #f38874;
+    fill: #4947D7;
     shape-rendering: crispEdges;
   }
   .bar:hover {
-    fill: #c15f45;
+    fill: #1B1976;
     transition: fill ease-in-out 200ms;
   }
   .point:hover{
     stroke: black;
+    fill: #100F43;
   }
   .axis text {
     fill: #666;
@@ -96,6 +100,51 @@ svg .tick > text {
   overflow-wrap: break-word; */
  }
 
+.tabulator{
+  font-family: 'Arial', sans-serif;
+}
+
+.tabulator-col{
+  padding: 10px;
+  text-align: center;
+}
+
+#tooltip, .tooltip{
+  font-family: 'Arial', sans-serif;
+  font-size: 0.8em;
+}
+
+text{
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
+}
+
+.bar.active {
+  stroke: #333;
+  stroke-width: 2px;
+  fill: #100F43;
+}
+
+.x-axis .domain {
+  stroke: #8693a0;
+}
+.y-axis .domain {
+  display: none;
+}
+
+.chart-line {
+  fill: none;
+  stroke: #517390;
+  stroke-width: 2px;
+}
+
+
+/* svg .tick > text:hover {
+  font-weight: bold;
+  fill: red;
+} */
+
+
 /*table {
   border-collapse: collapse;
   width: 100%;
@@ -129,30 +178,8 @@ tbody{
   width:100%;
 }*/
 
-.tabulator{
+p{
   font-family: 'Arial', sans-serif;
-}
-
-.tabulator-col{
-  padding: 10px;
-  text-align: center;
-}
-
-#tooltip, .tooltip{
-  font-family: 'Arial', sans-serif;
-  font-size: 0.8em;
-}
-
-text{
-  font-family: 'Arial', sans-serif;
-  font-size: 12px;
-}
-
-/* svg .tick > text:hover {
-  font-weight: bold;
-  fill: red;
-} */
-
-.bar.active {
-  stroke: #333;
+  margin: 5px;
+  font-style: italic;
 }

@@ -2,7 +2,11 @@
 
 //global variables
 let planetFilter = [];
-let ogData, data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table;
+let ogData, data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table; //global variable for data, each chart
+let modal; //global variable for modal object
+
+modal = document.getElementById("myModal");
+span = document.getElementById("btnCloseModal");
 
 //Add data
 d3.csv('data/exoplanets.csv')
@@ -115,7 +119,6 @@ d3.csv('data/exoplanets.csv')
         scatter.updateVis();
 
 
-
         //9 - Table (using Tabulator library)
         console.log("Populating table with values")
         table = new Table({
@@ -165,6 +168,7 @@ function filterData(dataCol) {
     table.updateVis();
 }
 
+//Make filter for if user wants/doesn't want to see missing data
 function includeMissingData(fromCheckbox) {
     console.log("Missing data function called")
     //Filtering data to remove all missing info on charts   
@@ -175,7 +179,7 @@ function includeMissingData(fromCheckbox) {
         data = data.filter(d => d.pl_rade != "") //remove missing radius
         data = data.filter(d => d.pl_orbsmax != "") //remove missing planet orbitals
         data = data.filter(d => d.pl_bmasse != "") //remove missing planet masses
-        data = data.filter(d => d.pl_orbeccen >= 0) //remove negative eccentricity bc it's not possible and could mean the whole row is compromised
+        data = data.filter(d => +d.pl_orbeccen >= 0) //remove negative eccentricity bc it's not possible and could mean the whole row is compromised
         data = data.filter(d => d.st_spectype != "")  //remove missing spectral types
         data = data.filter(d => d.st_rad != "") //remove missing system radius
         data = data.filter(d => d.st_mass != "") //remove missing system mass
@@ -214,4 +218,38 @@ function includeMissingData(fromCheckbox) {
         console.log("I may have two errors above. Ignore.") //TODO suppress errors
         table.updateVis();
     }  
+}
+
+
+
+
+
+/////////////////////////// Functions for Modal Broswer window 
+function openModalBrowser(selectedData) {
+    modal.style.display = "block";
+
+    // Modal - scatterplot/orbital chart for modal_broswer
+    console.log("Creating orbital chart for modal_browser")
+    orbital = new Modal_Orbital({ 
+        'parentElement': '#orbital',
+        'containerWidth': 800,
+        'containerHeight': 400,
+    }, data, selectedData);
+    orbital.updateVis();
+
+
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    console.log("User clicked (x), close modal")
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    console.log("User clicked out, close modal")
+    if (event.target == modal) {
+    modal.style.display = "none";
+    }
 }

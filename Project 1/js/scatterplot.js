@@ -1,3 +1,4 @@
+//TODO would have been nice to add zoom here
 class Scatterplot {
 
     /**
@@ -163,6 +164,10 @@ class Scatterplot {
   
       // Tooltip event listeners
       circles
+          .on('click', (event, d) =>{
+            console.log("Open exoplanet browser")
+            openModalBrowser(d);   
+          })
           .on('mouseover', (event,d) => {
             d3.select('#tooltip')
               .style('opacity', '1')

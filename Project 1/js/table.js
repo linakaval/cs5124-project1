@@ -51,6 +51,9 @@ class Table {
        });
         //trigger a on alert message when the row is clicked
         vis.table.on("rowClick", function(e, row){ 
+            console.log("Open exoplanet browser")
+            //console.log(row.getData())
+            openModalBrowser(row.getData());   
             //alert("Row " + row.getData().exoplanet + " Clicked!!!!");
         })
     }

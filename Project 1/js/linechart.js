@@ -39,12 +39,12 @@ class LineChart {
 
     // Initialize axes
     vis.xAxis = d3.axisBottom(vis.xScale)
-        .ticks(6)
+        .ticks(4)
         .tickSizeOuter(0)
         .tickPadding(10);
         //.tickFormat(d3.format("Y"));
     vis.yAxis = d3.axisLeft(vis.yScale)
-        .ticks(4)
+        .ticks(6)
         .tickSizeOuter(0)
         .tickPadding(10);
 

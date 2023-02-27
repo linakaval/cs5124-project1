@@ -32,7 +32,7 @@ class Scatterplot {
   
       // Initialize scales
       vis.colorScale = d3.scaleOrdinal()
-          .range(['#4947D7', '#FFAE42']) // blue and orange/yellow
+          .range(['#A4A3EB', '#FFAE42']) // blue and orange/yellow
           .domain(['exoplanet','milkyway']);
   
       vis.xScale = d3.scaleLog()
@@ -45,7 +45,7 @@ class Scatterplot {
       // Initialize axes
       vis.xAxis = d3.axisBottom(vis.xScale)
           .tickFormat("")
-          .ticks(6)
+          .ticks(4)
           .tickSizeOuter(0);  
           //.tickSize(-vis.height - 10)
           //.tickPadding(10);
@@ -53,7 +53,7 @@ class Scatterplot {
   
       vis.yAxis = d3.axisLeft(vis.yScale)
           .tickFormat("")
-          .ticks(6)
+          .ticks(4)
           //.tickSize(-vis.width - 10)
           .tickSizeOuter(0)
           .tickPadding(10);
@@ -142,7 +142,7 @@ class Scatterplot {
 
       // Add circles
       const circles = vis.chart.selectAll('.point')
-          .data(vis.data, d => d.trail)
+          .data(vis.data)
         .join('circle')
           .attr('class', 'point')
           .attr('r', 4)

@@ -41,8 +41,8 @@ class Modal_Orbital {
       .range([vis.width/2, vis.width]);
 
     vis.planetColorScale = d3.scaleOrdinal()
-    .range(d3.schemeCategory10.splice(0, 7)) 
-    .domain(['Asteroidan', 'Mercurian', 'Subterran', 'Terran', 'Superterran', 'Neptunian', 'Jovian']);
+      .range(d3.schemeCategory10) 
+      .domain(['Asteroidan', 'Mercurian', 'Subterran', 'Terran', 'Superterran', 'Neptunian', 'Jovian']);
 
   }
 
@@ -161,21 +161,30 @@ class Modal_Orbital {
       .attr('y', 5)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
+      .style('font-size', 20)
       .text(`Exoplanet Name: ${vis.data.pl_name}`);
 
     vis.svg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 5)
-      .attr('y', 20)
+      .attr('y', 25)
       .attr('dy', '.71em')
-      .text(`Planet mass: ${vis.data.sys_name}`);
+      .text(`System name: ${vis.data.sys_name}`);
 
     vis.svg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 5)
-      .attr('y', 35)
+      .attr('y', 40)
       .attr('dy', '.71em')
       .text(`Number of stars in system: ${vis.data.sy_snum}`);
+
+
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y', 55)
+      .attr('dy', '.71em')
+      .text(`Number of planets in system: ${vis.data.sy_pnum}`);
 
 
     //Notes
@@ -294,39 +303,31 @@ class Modal_Orbital {
       .style("font-weight", "bold")
       .text("Orbital Data");
 
-
     vis.dataSvg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 300)
       .attr('y', 20)
-      .attr('dy', '.71em')
-      .text(`Number of planets in system: ${vis.data.sy_pnum}`);
-
-    vis.dataSvg.append('text')
-      .attr('class', 'axis-title')
-      .attr('x', 300)
-      .attr('y', 35)
       .attr('dy', '.71em')
       .text(`Longest radius of an elliptic orbit: ${vis.data.pl_orbsmax} [au]`);
 
     vis.dataSvg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 300)
-      .attr('y', 50)
+      .attr('y', 35)
       .attr('dy', '.71em')
       .text(`Eccentricity: ${vis.data.pl_orbeccen}`);
 
     vis.dataSvg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 300)
-      .attr('y', 65)
+      .attr('y', 50)
       .attr('dy', '.71em')
       .text(`Planet radius: ${vis.data.pl_rade} [Earth radius]`);
 
     vis.dataSvg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 300)
-      .attr('y', 80)
+      .attr('y', 65)
       .attr('dy', '.71em')
       .text(`Star radius: ${vis.data.st_rad*109.1} [Earth radius]`);
 

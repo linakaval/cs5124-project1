@@ -17,7 +17,7 @@ body {
     font-family: 'Arial', sans-serif;
     font-size: 2rem; 
     margin-top: 0em;
-    margin-bottom: 0.6em;
+    margin-bottom: 0em;
   }
   h2 {
     font-family: 'Arial', sans-serif;
@@ -206,8 +206,8 @@ p{
   margin: 5% auto; /*15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 1000px;
-  height: 600px;
+  width: 800px;
+  height: 550px;
 }
 
 /* The Close Button */
@@ -223,4 +223,8 @@ p{
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+#myheader{
+  background-color: #A4A3EB;
 }

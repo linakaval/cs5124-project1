@@ -2,7 +2,7 @@
 
 //global variables
 let planetFilter = [];
-let ogData, data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table; //global variable for data, each chart
+let ogData, data, sy_snum, sy_pnum, st_spectype, discovery, habitable, distance_from_earth, year_linechart, scatter, table, orbital; //global variable for data, each chart
 let modal; //global variable for modal object
 
 modal = document.getElementById("myModal");
@@ -126,6 +126,13 @@ d3.csv('data/exoplanets.csv')
             'containerHeight': 410,
         }, data, "pl_name");
         table.updateVis();
+
+        console.log("Creating orbital chart for modal_browser")
+        orbital = new Modal_Orbital({ 
+            'parentElement': '#orbital',
+            'containerWidth': 800,
+            'containerHeight': 400,
+        }, data, null);
  })
  .catch(error => console.error(error));
 
@@ -227,17 +234,9 @@ function includeMissingData(fromCheckbox) {
 /////////////////////////// Functions for Modal Broswer window 
 function openModalBrowser(selectedData) {
     modal.style.display = "block";
-
-    // Modal - scatterplot/orbital chart for modal_broswer
-    console.log("Creating orbital chart for modal_browser")
-    orbital = new Modal_Orbital({ 
-        'parentElement': '#orbital',
-        'containerWidth': 800,
-        'containerHeight': 400,
-    }, data, selectedData);
+    // Modal - scatterplot/orbital chart for modal_browser
+    orbital.data = selectedData;
     orbital.updateVis();
-
-
 }
 
 // When the user clicks on <span> (x), close the modal

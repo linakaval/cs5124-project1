@@ -41,11 +41,11 @@ class Barchart {
         .paddingInner(0.2);
 
     vis.xAxis = d3.axisBottom(vis.xScale)
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
     vis.yAxis = d3.axisLeft(vis.yScale)
-        .ticks(6)
+        .ticks(2)
         .tickSizeOuter(0);
         //.tickFormat(d3.formatPrefix('.0s', 1e6)); // Format y-axis ticks as millions
 
@@ -113,7 +113,7 @@ class Barchart {
 
     // Set the scale input domains
     vis.xScale.domain(vis.aggregatedData.map(vis.xValue));
-    vis.yScale.domain([0, d3.max(vis.aggregatedData, vis.yValue)]);
+    vis.yScale.domain([0, 5000]);//d3.max(vis.aggregatedData, vis.yValue)
 
     vis.renderVis();
   }
@@ -182,7 +182,10 @@ class Barchart {
     let tick = d3.selectAll('.tick')
     tick
         .on('mouseover', (event,d) => {
-          if (event.target.ownerSVGElement.id == "chart3" || event.target.ownerSVGElement.id == "chart4"){
+          console.log(event)
+          let xVal = ['K', 'M', 'F', 'G', 'A', 'No data', 'Radial Velocity', 'Imaging','Eclipse Timing Variations','Transit','Astrometry'
+          ,'Disk Kinematics','Transit Timing Variations','Orbital Brightness Modulation','Pulsation Timing Variations','Microlensing','Pulsar Timing']
+          if ((event.target.ownerSVGElement.id == "chart3" && xVal.includes(event.target.__data__))|| event.target.ownerSVGElement.id == "chart4" && xVal.includes(event.target.__data__)){
             d3.select('#tooltip')
             .style('opacity', 1)
             .style('display', 'block')

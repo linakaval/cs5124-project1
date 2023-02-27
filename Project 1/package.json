@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "d3-scale-chromatic": "^3.0.0",
     "tabulator-tables": "^5.4.4"
   }
 }

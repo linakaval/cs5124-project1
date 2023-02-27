@@ -85,7 +85,7 @@ class Scatterplot {
           .attr('y', vis.height + 30)
           .attr('x', vis.width/2)
           .attr('dy', '.71em')
-          .style('text-anchor', 'end')
+          .style('font-weight', 'bold')
           .text('Radius');
   
       vis.svg.append('text')
@@ -95,6 +95,7 @@ class Scatterplot {
           .attr('dy', '.71em')
           .style('text-anchor', 'end')
           .attr("transform", "rotate(-90)")
+          .style('font-weight', 'bold')
           .text('Mass');
           
     }

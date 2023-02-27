@@ -30,7 +30,7 @@ class Modal_Orbital {
     vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
     //Source: http://hyperphysics.phy-astr.gsu.edu/hbase/Starlog/staspe.html
-    vis.colorScale = d3.scaleOrdinal()
+    vis.starColorScale = d3.scaleOrdinal()
       .range(['#250AFB', '#0AC6FB', '#E3C907', '#ffa500', '#FB3A0A']) 
       .domain(['A', 'F', 'G', 'K', 'M']);
 
@@ -39,6 +39,10 @@ class Modal_Orbital {
     vis.starToPlanetScale = d3.scaleLog()
       .domain([0.01, 7550])
       .range([vis.width/2, vis.width]);
+
+    vis.planetColorScale = d3.scaleOrdinal()
+    .range(d3.schemeCategory10.splice(0, 7)) 
+    .domain(['Asteroidan', 'Mercurian', 'Subterran', 'Terran', 'Superterran', 'Neptunian', 'Jovian']);
 
   }
 
@@ -54,29 +58,13 @@ class Modal_Orbital {
     vis.colorValue = vis.data.star_type;
     vis.starToPlanetValue = vis.data.pl_orbsmax;
     vis.eccentricity = vis.data.pl_orbeccen;
+    vis.planetSize = vis.data.pl_rade;
+    vis.sunSize = vis.data.st_rad*109.1/vis.planetSize*5;
+    vis.planetSizeDesc = colorPlanet(vis.planetSize);
+    //TODO fix radius
     //https://www.cuemath.com/geometry/eccentricity-of-ellipse/
     vis.yRadius = Math.sqrt((1-(Math.pow(vis.eccentricity, 2)))*(Math.pow(vis.starToPlanetValue, 2))); 
-    // //console.log(vis.starToPlanetValue, vis.eccentricity, vis.yRadius)
-    // vis.pathLength = Math.PI*(vis.starToPlanetValue+vis.yRadius) //≈ π (a + b)
-    // var gen = function* () {
-    //   for (var i = 0; i < parseInt(vis.pathLength); i++ ) {
-    //     yield i = (i==(parseInt(l)-2)) ? 0 : i;
-    //   }
-    // };
-    // console.log(gen)
 
-
-
-    // draw = { 
-    //   const svg = d3.select(DOM.svg(width, height))
-      
-    //   const path = svg.append("path")
-    //     .attr("d",d3.line()(pathCoordinates))
-      
-    //   return path.node()
-    // }
-
-    // movingX = { yield draw.getPointAtLength(timer).x }
     // Remove old SVG
     d3.selectAll("#orbital > *").remove();
     d3.selectAll("#orbitalData > *").remove();
@@ -122,12 +110,13 @@ class Modal_Orbital {
       .style("stroke", "#D6D4CF")
       .style("stroke-width", 2)
       .style("fill", "none");
+
     //create Sun circle
     vis.svg.append("circle")
       .attr("cx", vis.width/2)
       .attr("cy", vis.height/2)
       .attr("r", 10) 
-      .style("fill", vis.colorScale(vis.colorValue));
+      .style("fill", vis.starColorScale(vis.colorValue));
 
     //create Sun label
     vis.svg.append("text")
@@ -140,11 +129,11 @@ class Modal_Orbital {
       .text("Sun");
 
     //create planet circle
-    vis.svg.append("circle")
-      .attr("cx",vis.starToPlanetScale(vis.starToPlanetValue) )
+    vis.planet = vis.svg.append("circle")
+      .attr("cx", vis.starToPlanetScale(vis.starToPlanetValue))
       .attr("cy", vis.height/2)
-      .attr("r", 10) 
-      .style("fill", "#808080");
+      .attr("r", 5) 
+      .style("fill", vis.planetColorScale(vis.planetSizeDesc));
 
     //create planet label
     vis.svg.append("text")
@@ -157,49 +146,193 @@ class Modal_Orbital {
       .text("Planet");
 
 
+    //Source: https://squiggle.city/~frencil/archives/20150501.html
+    //TODO: animate the orbit
+
+
+    // The distances of the planets to their star
+		// The orbits of the planets around their star (note, these are ellipses)
+
+
+    //////////////////////////////////////////Display data for current click
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y', 5)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .text(`Exoplanet Name: ${vis.data.pl_name}`);
+
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y', 20)
+      .attr('dy', '.71em')
+      .text(`Planet mass: ${vis.data.sys_name}`);
+
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y', 35)
+      .attr('dy', '.71em')
+      .text(`Number of stars in system: ${vis.data.sy_snum}`);
+
+
+    //Notes
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y', 380-30)
+      .attr('dy', '.71em')
+      .style('text-anchor', 'start')
+      .text('Shown here are accurate scaled distances of');
+
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y',  380-15)
+      .attr('dy', '.71em')
+      .style('text-anchor', 'start')
+      //.style('font-weight', 'bold')
+      .text('the sun to the exoplanet, as well as the orbit ellipse');
+    
+    vis.svg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 5)
+      .attr('y',  380)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .text('Note: Sun and Planet size are not to scale.');
+      
+
+    
 
 
 
+    //Source: https://d3-graph-gallery.com/graph/custom_legend.html
     //Create legend
     let specTypeData = ['A', 'F', 'G', 'K', 'M'];
+    let planetDescData = ['Asteroidan', 'Mercurian', 'Subterran', 'Terran', 'Superterran', 'Neptunian', 'Jovian'];
 
     vis.dataSvg = d3.select("#orbitalData")
       .append("svg")
       .attr("style", "outline: thin solid black;")
       .attr("width", vis.width)
-      .attr("height", 100);
+      .attr("height", 120);
 
+    // Add legend title for stars
     vis.dataSvg.append('text')
       .attr('class', 'axis-title')
       .attr('x', 5)
       .attr('y', 5)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
-      .text('Spectral Type');
+      .text('Star Spectral Type');
     
 
-    // Add one dot in the legend for each name.
-    vis.dataSvg.selectAll("mydots")
+    // Add one dot in the legend for each star
+    vis.dataSvg.selectAll("starLegendDots")
       .data(specTypeData)
       .enter()
       .append("circle")
         .attr("cx", 10)
         .attr("cy", function(d,i){ return 25 + i*12}) // 25 is where the first dot appears. 10 is the distance between dots
         .attr("r", 5)
-        .style("fill", d => vis.colorScale(d))
+        .style("fill", d => vis.starColorScale(d))
 
-    // Add one dot in the legend for each name.
-    vis.dataSvg.selectAll("mylabels")
+    // Add desc in the legend for each star
+    vis.dataSvg.selectAll("starLegendLabels")
       .data(specTypeData)
       .enter()
       .append("text")
         .attr("x", 30)
         .attr("y", function(d,i){ return 25 + i*12}) // 25 is where the first dot appears. 10 is the distance between dots
-        .style("fill",  d => vis.colorScale(d))
+        .style("fill",  d => vis.starColorScale(d))
         .text(d => d)
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle")
         .style("font-weight", "bold")
+
+    // Add title for planet legend
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 140)
+      .attr('y', 5)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .text('Planet Type');
+
+      // Add one dot in the legend for each planet
+    vis.dataSvg.selectAll("planetLegendDots")
+      .data(planetDescData)
+      .enter()
+      .append("rect")
+        .attr("x", 145)
+        .attr("y", function(d,i){ return 18 + i*12}) // 25 is where the first dot appears. 10 is the distance between dots
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", d => vis.planetColorScale(d))
+
+    // Add desc in the legend for each planet
+    vis.dataSvg.selectAll("planetLegendLabels")
+      .data(planetDescData)
+      .enter()
+      .append("text")
+        .attr("x", 165)
+        .attr("y", function(d,i){ return 25 + i*12}) // 25 is where the first dot appears. 10 is the distance between dots
+        .style("fill",  d => vis.planetColorScale(d))
+        .text(d => d)
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle")
+        .style("font-weight", "bold")
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 5)
+      .attr('dy', '.71em')
+      .style("font-weight", "bold")
+      .text("Orbital Data");
+
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 20)
+      .attr('dy', '.71em')
+      .text(`Number of planets in system: ${vis.data.sy_pnum}`);
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 35)
+      .attr('dy', '.71em')
+      .text(`Longest radius of an elliptic orbit: ${vis.data.pl_orbsmax} [au]`);
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 50)
+      .attr('dy', '.71em')
+      .text(`Eccentricity: ${vis.data.pl_orbeccen}`);
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 65)
+      .attr('dy', '.71em')
+      .text(`Planet radius: ${vis.data.pl_rade} [Earth radius]`);
+
+    vis.dataSvg.append('text')
+      .attr('class', 'axis-title')
+      .attr('x', 300)
+      .attr('y', 80)
+      .attr('dy', '.71em')
+      .text(`Star radius: ${vis.data.st_rad*109.1} [Earth radius]`);
+
+
+    
+  
 
 
 
@@ -225,4 +358,12 @@ class Modal_Orbital {
 }
 
 
-
+function colorPlanet(plMass){
+  if (plMass < 0.0001) return "Asteroidan"
+  else if (plMass >= 0.0001 && plMass < 0.1) return "Mercurian"
+  else if (plMass >= 0.1 && plMass < 0.5) return "Subterran"
+  else if (plMass >= 0.5 && plMass < 2) return "Terran"
+  else if (plMass >= 2 && plMass < 10) return "Superterran"
+  else if (plMass >= 10 && plMass < 50) return "Neptunian"
+  else if (plMass >= 50) return "Jovian"
+}

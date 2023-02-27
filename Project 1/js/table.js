@@ -44,7 +44,7 @@ class Table {
             columns:[ //Define Table Columns
                 {title:"Exoplanet", field:"pl_name"},
                 {title:"Discovery Year", field:"disc_year"},
-                {title:"Discovery Facility", field:"disc_facility"},
+                {title:"Facility", field:"disc_facility"},
                 {title:"Spectral Type", field:"st_spectype"},
             ],
             index: "exoplanet"

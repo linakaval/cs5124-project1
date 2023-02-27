@@ -43,7 +43,7 @@ class Scatterplot {
   
       // Initialize axes
       vis.xAxis = d3.axisBottom(vis.xScale)
-          //.tickFormat("%Y")
+          .tickFormat("")
           .ticks(6)
           .tickSizeOuter(0);  
           //.tickSize(-vis.height - 10)
@@ -51,7 +51,7 @@ class Scatterplot {
           //.tickFormat(d => d + ' km');
   
       vis.yAxis = d3.axisLeft(vis.yScale)
-          //.tickFormat("")
+          .tickFormat("")
           .ticks(6)
           //.tickSize(-vis.width - 10)
           .tickSizeOuter(0)

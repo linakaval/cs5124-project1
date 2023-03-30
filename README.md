@@ -1,2 +1,1 @@
-# cs5124-visual-data
-Files for CS5124
+# Project 1 - Lina Kaval

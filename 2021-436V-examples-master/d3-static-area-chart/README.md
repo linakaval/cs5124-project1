@@ -1,1 +1,0 @@
-# D3 Static Area Chart

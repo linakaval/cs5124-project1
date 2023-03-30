@@ -1,1 +1,0 @@
-# Scrollytelling using D3 and Waypoints
